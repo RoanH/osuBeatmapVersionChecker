@@ -12,6 +12,8 @@ import me.roan.infinity.util.encryption.Encryption;
 
 public class Database {
 	
+	//https://github.com/ppy/osu-wiki/blob/master/wiki/osu!_File_Formats/Db_(file_format)/en.md
+	
 	private static int version;//osu! version, not that anyone still uses an old version
 	public static final Map<String, BeatmapData> maps = new HashMap<String, BeatmapData>();
 	
