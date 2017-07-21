@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import me.roan.infinity.util.ByteUtils;
@@ -15,19 +17,19 @@ public class Database {
 	//https://github.com/ppy/osu-wiki/blob/master/wiki/osu!_File_Formats/Db_(file_format)/en.md
 	
 	private static int version;//osu! version, not that anyone still uses an old version
-	public static final Map<String, BeatmapData> maps = new HashMap<String, BeatmapData>();
+	public static final List<BeatmapData> maps = new ArrayList<BeatmapData>();
 	
 	public static final void readDatabase() throws IOException{
-		FileInputStream in = new FileInputStream(new File(Main.OSUDIR, "osu!.db"));
+		FileInputStream in = new FileInputStream(new File(VersionChecker.OSUDIR, "osu!.db"));
 		version = readInt(in);
 		in.skip(13);
-		readString(in);//read player name, dunno why though
-		int numberOfBeatmaps = readInt(in);//read number of beatmaps
+		readString(in);
+		int numberOfBeatmaps = readInt(in);
 		for(int i = 0 ; i < numberOfBeatmaps; i++){
 			BeatmapData data = readBeatmapEntry(in);
-			maps.put(data.hash, data);
+			maps.add(data);
 		}
-		in.skip(4);//skip weird int .-.
+		in.skip(4);
 		in.close();
 	}
 	
@@ -43,7 +45,7 @@ public class Database {
 		data.audiofile = readString(in);
 		data.hash = readString(in);
 		data.osufilename = readString(in);
-		in.skip(1);//skip ranked status
+		data.status = in.read();//skip ranked status
 		in.skip(2);//skip number of circles
 		in.skip(2);//skip number of sliders
 		in.skip(2);//skip number of spinners
@@ -115,13 +117,13 @@ public class Database {
 		public String title;
 		public String creator;
 		public String diff;
-		public String audiofile;
 		public String hash;
 		public String osufilename;
 		public int mapid;
 		public int setid;
 		public String songfolder;
-		public int previeuwTime;
+		public String audiofile;
+		public int status;
 		
 		@Override
 		public String toString(){
