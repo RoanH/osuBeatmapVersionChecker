@@ -5,9 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import me.roan.infinity.util.ByteUtils;
 import me.roan.infinity.util.encryption.Encryption;
@@ -45,7 +43,7 @@ public class Database {
 		data.audiofile = readString(in);
 		data.hash = readString(in);
 		data.osufilename = readString(in);
-		data.status = in.read();//skip ranked status
+		data.status = in.read();
 		in.skip(2);//skip number of circles
 		in.skip(2);//skip number of sliders
 		in.skip(2);//skip number of spinners
@@ -67,8 +65,7 @@ public class Database {
 		data.mapid = readInt(in);
 		data.setid = readInt(in);
 		in.skip(4);//skip thread id
-		in.skip(10);
-		in.skip(1);//skip game mode //TODO might e useful
+		in.skip(11);
 		readString(in);//skip song source
 		readString(in);//skip song tags
 		in.skip(2);
