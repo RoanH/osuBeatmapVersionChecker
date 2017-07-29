@@ -25,7 +25,9 @@ public class Database {
 		int numberOfBeatmaps = readInt(in);
 		for(int i = 0 ; i < numberOfBeatmaps; i++){
 			BeatmapData data = readBeatmapEntry(in);
-			maps.add(data);
+			if(data.status != 4 && data.status != 5){
+				maps.add(data);
+			}
 		}
 		in.skip(4);
 		in.close();
@@ -47,8 +49,8 @@ public class Database {
 		in.skip(2);//skip number of circles
 		in.skip(2);//skip number of sliders
 		in.skip(2);//skip number of spinners
-		in.skip(8);
-		if(version < 20140609){
+		in.skip(8);//XXX last modification time - last update?
+		if(version < 20140609){//XXX AR, CS, HP, OD
 			in.skip(4);
 		}else{
 			in.skip(16);
@@ -60,24 +62,28 @@ public class Database {
 			in.skip(readInt(in) * 14);//skip ctb star rating
 			in.skip(readInt(in) * 14);//skip mania star rating
 		}
-		in.skip(12);
-		in.skip(readInt(in) * 17);//skip timing points
+		in.skip(4);
+		in.skip(4);//total time //XXX
+		in.skip(4);//preview time XXX
+		in.skip(readInt(in) * 17);
 		data.mapid = readInt(in);
 		data.setid = readInt(in);
-		in.skip(4);//skip thread id
-		in.skip(11);
-		readString(in);//skip song source
-		readString(in);//skip song tags
+		in.skip(4);//skip thread id XXX
+		in.skip(10);
+		in.skip(1);//XXX gamemode
+		readString(in);//skip song source XXX
+		readString(in);//skip song tags XXX
 		in.skip(2);
 		readString(in);
 		in.skip(10);
 		data.songfolder = readString(in);
-		in.skip(8);
+		in.skip(8);//XXX last repository check? - last update?
 		in.skip(5);
 		if(version < 20140609){
 			in.skip(2);
 		}
-		in.skip(5);
+		in.skip(4);//XXX last modification time
+		in.skip(1);
 		return data;
 	}
 	
@@ -107,24 +113,5 @@ public class Database {
 			count++;
 		} while (((cur & 0x80) == 0x80) && count < 5);
 		return result;
-	}
-	
-	public static final class BeatmapData{
-		public String artist;
-		public String title;
-		public String creator;
-		public String diff;
-		public String hash;
-		public String osufilename;
-		public int mapid;
-		public int setid;
-		public String songfolder;
-		public String audiofile;
-		public int status;
-		
-		@Override
-		public String toString(){
-			return songfolder;
-		}
 	}
 }
