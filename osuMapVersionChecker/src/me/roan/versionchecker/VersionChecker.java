@@ -12,6 +12,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -26,8 +27,14 @@ public class VersionChecker {
 	
 	public static File OSUDIR = new File("D://osu!");
 	private static final Gson gson = new Gson();
-
+	
 	public static void main(String[] args){
+		JFrame f = new JFrame();
+		f.add(new ReplaySelectionTab());
+		f.setVisible(true);
+	}
+
+	public static void mainl(String[] args){
 		String APIKEY = args[0];
 		try {
 			Database.readDatabase();
@@ -73,7 +80,7 @@ public class VersionChecker {
 	}
 	
 
-	public class ReplaySelectionTab extends JPanel{
+	public static class ReplaySelectionTab extends JPanel{
 
 		/**
 		 * 
@@ -82,44 +89,19 @@ public class VersionChecker {
 
 		protected ReplaySelectionTab(){
 			this.setLayout(new BorderLayout());
-			JPanel content = new JPanel(new GridLayout(1, 2));
-			JPanel mappanel = new JPanel(new BorderLayout());
-			JPanel playpanel = new JPanel(new BorderLayout());
 			JList<ListRenderable> beatmaps = new JList<ListRenderable>(FileManager.getBeatmaps());
 			DefaultListModel<ListRenderable> m = new DefaultListModel<ListRenderable>();
-			JList<ListRenderable> beatmapsimp = new JList<ListRenderable>(m);
-			
 			
 			beatmaps.setUI(new RListUI());
-			beatmapsimp.setUI(new RListUI());
 			
 			((RListUI)beatmaps.getUI()).setBackground(Color.LIGHT_GRAY.brighter());
 			beatmaps.setFixedCellHeight(16 * 3);
 			beatmaps.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			
-			JTabbedPane beatmap = new JTabbedPane();
-			beatmap.add(new JScrollPane(beatmaps), "Local beatmaps");
-			
-			mappanel.add(beatmap, BorderLayout.CENTER);
-			
-			
-			JPanel searchrpanel = new JPanel(new FlowLayout());
-			JPanel searchbpanel = new JPanel(new FlowLayout());
-			
-			
-			playpanel.add(searchrpanel, BorderLayout.PAGE_START);
-			mappanel.add(searchbpanel, BorderLayout.PAGE_START);
-			
-			content.add(playpanel);
-			content.add(mappanel);
-			
-			this.add(content, BorderLayout.CENTER);
+			this.add(new JScrollPane(beatmaps), BorderLayout.CENTER);
 			
 			JPanel header = new JPanel(new BorderLayout());
 			
-			
-			
-
 
 			this.add(header, BorderLayout.PAGE_START);
 		}
