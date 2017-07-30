@@ -29,6 +29,13 @@ public class VersionChecker {
 	private static final Gson gson = new Gson();
 	
 	public static void main(String[] args){
+		try {
+			Database.readDatabase();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		FileManager.init();
 		JFrame f = new JFrame();
 		f.add(new ReplaySelectionTab());
 		f.setVisible(true);
@@ -42,6 +49,7 @@ public class VersionChecker {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		FileManager.init();
 		for(BeatmapData data : Database.maps){
 			if(!(data.status == 4 || data.status == 5)){//4=ranked,5=approved,7=loved?,2=graveyard/pending,1=not submited>
 				System.out.println(data.status + " " + data.title + " " + data.diff);

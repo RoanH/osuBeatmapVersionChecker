@@ -25,6 +25,10 @@ public class FileManager{
 		return beatmapsModel;
 	}
 	
+	protected static void init(){
+		addAll(beatmapsModel, parseB());
+	}
+	
 	private static final void addAll(DefaultListModel<ListRenderable> model, ListRenderable[] items){
 		for(ListRenderable p : items){
 			model.addElement(p);
@@ -35,7 +39,7 @@ public class FileManager{
 		ItemBase[] panels = new ItemBase[Database.maps.size()];
 		int i = 0;
 		for(BeatmapData data : Database.maps){
-			panels[i] = new BeatmapItem(new File(VersionChecker.OSUDIR, "Songs" + File.separator + data.songfolder), data.setid, data.creator, data.diff, data.title, data.artist, data);
+			panels[i] = new BeatmapItem(new File(VersionChecker.OSUDIR, "Songs" + File.separator + data.songfolder), data);
 			i++;
 		}
 		return panels;
@@ -77,20 +81,20 @@ public class FileManager{
 			g.drawString(data.diff, (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6, y + 12 + 14 + 15);
 		}
 		
-		private BeatmapItem(File file, int id, String creator, String diff, String title, String artist, BeatmapData data){
+		private BeatmapItem(File file, BeatmapData data){
 			super(file);
 			imageLoader.submit(()->{
 				try {
-					File f = new File(VersionChecker.OSUDIR + File.separator + "Data" + File.separator + "bt" + File.separator + id + ".jpg");
+					File f = new File(VersionChecker.OSUDIR + File.separator + "Data" + File.separator + "bt" + File.separator + data.setid + ".jpg");
 					if(!f.exists()){
-						f = new File(VersionChecker.OSUDIR + File.separator + "Data" + File.separator + "bt" + File.separator + id + "l.jpg");
+						f = new File(VersionChecker.OSUDIR + File.separator + "Data" + File.separator + "bt" + File.separator + data.setid + "l.jpg");
 					}
 					if(f.exists()){
 						icon = ImageIO.read(f).getScaledInstance(-1, 16 * 2 + 8, Image.SCALE_SMOOTH);
 					}
 				} catch (IOException e) {
 					//This error is not very important, report it to standard error and move on.
-					System.err.println("Couldn't load beatmap icon for: " + title + "/" + id + " icons:[small=" + new File(VersionChecker.OSUDIR + File.separator + "Data" + File.separator + "bt" + File.separator + id + ".jpg").exists() + ",large=" + new File(VersionChecker.OSUDIR + File.separator + "Data" + File.separator + "bt" + File.separator + id + "l.jpg").exists() + "]");
+					System.err.println("Couldn't load beatmap icon for: " + data.title + "/" + data.setid + " icons:[small=" + new File(VersionChecker.OSUDIR + File.separator + "Data" + File.separator + "bt" + File.separator + data.setid + ".jpg").exists() + ",large=" + new File(VersionChecker.OSUDIR + File.separator + "Data" + File.separator + "bt" + File.separator + data.setid + "l.jpg").exists() + "]");
 					e.printStackTrace();
 				}
 			});
