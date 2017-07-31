@@ -79,14 +79,20 @@ public class FileManager{
 			g.setColor(Color.GRAY);
 			g.drawLine(x, y + h - 1, x + w, y + h - 1);
 			g.drawImage(icon, x + 4, y + 4, null);//40 - 71
-			if(selected){
-				System.out.println("drawing");
+			if(!playing && selected){
 				g.setColor(Color.WHITE);
-				if(!playing){
-					g.fillPolygon(new int[]{4 + 10, 4 + 30, 4 + 10}, new int[]{4 + 10, 4 + 20, 4 + 30}, 3);
-				}else{
-					g.fillRect(4 + 10, 4 + 10, 7, 20);
-				}
+				int[] xs = new int[]{x + 4 + 16, x + 4 + 36, x + 4 + 16};
+				int[] ys = new int[]{y + 4 + 10, y + 4 + 20, y + 4 + 30};
+				g.fillPolygon(xs, ys, 3);
+				g.setColor(Color.GRAY);
+				g.drawPolygon(xs, ys, 3);
+			}else if(playing){
+				g.setColor(Color.WHITE);
+				g.fillRect(x + 4 + 16, y + 4 + 10, 7, 20);
+				g.fillRect(x + 4 + 14 + 16, y + 4 + 10, 7, 20);
+				g.setColor(Color.GRAY);
+				g.drawRect(x + 4 + 16, y + 4 + 10, 7, 20);
+				g.drawRect(x + 4 + 14 + 16, y + 4 + 10, 7, 20);
 			}
 			g.setColor(PINK);
 			g.setFont(ftitle);
@@ -102,7 +108,6 @@ public class FileManager{
 		}
 		
 		public void onMouseEvent(MouseEvent e){
-			System.out.println("click at: " + e.getPoint() + " y: " + y);
 			if(e.getX() > 4 && e.getX() < 4 + 71 && e.getY() > y + 4 && e.getY() < y + 4 + 40){
 				if(!playing){
 					PrevieuwPlayer.playFile(this);
@@ -110,6 +115,7 @@ public class FileManager{
 				}else{
 					PrevieuwPlayer.stop();
 				}
+				e.getComponent().repaint();
 			}
 		}
 		
