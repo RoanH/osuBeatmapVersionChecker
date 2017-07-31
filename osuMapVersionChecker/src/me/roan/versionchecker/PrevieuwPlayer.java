@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.advanced.AdvancedPlayer;
@@ -31,12 +32,20 @@ public class PrevieuwPlayer {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			data.cancelPlayingState();
 		});
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+	
+	public static void stop(){
+		if(player != null){
+			player.close();
+			player = null;
 		}
 	}
 }

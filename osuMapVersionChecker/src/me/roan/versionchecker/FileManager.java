@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -63,9 +64,12 @@ public class FileManager{
 		public final BeatmapData local;
 		public BeatmapData online;
 		private static final ExecutorService imageLoader = Executors.newSingleThreadExecutor();
+		private int y;
+		private boolean playing = false;
 
 		@Override
 		public void paint(Graphics g, int x, int y, int w, int h, boolean selected) {
+			this.y = y;
 			g.setColor(Color.LIGHT_GRAY.brighter());
 			g.fillRect(x, y, x + w, y + h);
 			if(selected){
@@ -74,7 +78,16 @@ public class FileManager{
 			}
 			g.setColor(Color.GRAY);
 			g.drawLine(x, y + h - 1, x + w, y + h - 1);
-			g.drawImage(icon, x + 4, y + 4, null);
+			g.drawImage(icon, x + 4, y + 4, null);//40 - 71
+			if(selected){
+				System.out.println("drawing");
+				g.setColor(Color.WHITE);
+				if(!playing){
+					g.fillPolygon(new int[]{4 + 10, 4 + 30, 4 + 10}, new int[]{4 + 10, 4 + 20, 4 + 30}, 3);
+				}else{
+					g.fillRect(4 + 10, 4 + 10, 7, 20);
+				}
+			}
 			g.setColor(PINK);
 			g.setFont(ftitle);
 			g.drawString(local.title + " [" + local.diff + "]", (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6, y + 12);
@@ -82,6 +95,22 @@ public class FileManager{
 			g.setFont(finfo);
 			g.drawString(local.creator, (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6, y + 12 + 14);
 			g.drawString(local.hash, (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6, y + 12 + 14 + 15);
+		}
+		
+		public void cancelPlayingState(){
+			playing = false;
+		}
+		
+		public void onMouseEvent(MouseEvent e){
+			System.out.println("click at: " + e.getPoint() + " y: " + y);
+			if(e.getX() > 4 && e.getX() < 4 + 71 && e.getY() > y + 4 && e.getY() < y + 4 + 40){
+				if(!playing){
+					PrevieuwPlayer.playFile(this);
+					playing = true;
+				}else{
+					PrevieuwPlayer.stop();
+				}
+			}
 		}
 		
 		public void setOnlineData(BeatmapData data){

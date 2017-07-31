@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -103,7 +104,7 @@ public class VersionChecker {
 				public void mouseClicked(MouseEvent e) {
 					ListRenderable map = beatmaps.getSelectedValue();
 					if(map != null){
-						PrevieuwPlayer.playFile((BeatmapItem)map);
+						((BeatmapItem)map).onMouseEvent(e);
 					}
 				}
 
@@ -117,17 +118,13 @@ public class VersionChecker {
 
 				@Override
 				public void mouseEntered(MouseEvent e) {
-					// TODO Auto-generated method stub
-					
 				}
 
 				@Override
 				public void mouseExited(MouseEvent e) {
-					// TODO Auto-generated method stub
-					
 				}
 			});
-			
+	
 			beatmaps.setUI(new RListUI());
 			
 			((RListUI)beatmaps.getUI()).setBackground(Color.LIGHT_GRAY.brighter());
