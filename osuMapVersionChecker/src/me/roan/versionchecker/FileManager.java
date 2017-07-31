@@ -57,6 +57,8 @@ public class FileManager{
 	}
 	
 	public static final class BeatmapItem extends ItemBase{
+		public static final Color PINK = new Color(255, 102, 204);
+		public static final Color SELECTION_COLOR = new Color(0.0F, 1.0F, 1.0F, 0.3F);
 		private Image icon;
 		public final BeatmapData data;
 		private static final ExecutorService imageLoader = Executors.newSingleThreadExecutor();
@@ -66,13 +68,13 @@ public class FileManager{
 			g.setColor(Color.LIGHT_GRAY.brighter());
 			g.fillRect(x, y, x + w, y + h);
 			if(selected){
-				g.setColor(Color.CYAN);
+				g.setColor(SELECTION_COLOR);
 				g.fillRect(x, y, x + w, y + h);
 			}
 			g.setColor(Color.GRAY);
 			g.drawLine(x, y + h - 1, x + w, y + h - 1);
 			g.drawImage(icon, x + 4, y + 4, null);
-			g.setColor(Color.PINK);
+			g.setColor(PINK);
 			g.setFont(ftitle);
 			g.drawString(data.title, (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6, y + 12);
 			g.setColor(Color.BLACK);

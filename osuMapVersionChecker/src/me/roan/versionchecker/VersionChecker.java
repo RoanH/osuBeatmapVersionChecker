@@ -2,8 +2,6 @@ package me.roan.versionchecker;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -11,12 +9,10 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
 import javax.swing.ListSelectionModel;
 import com.google.gson.Gson;
 
@@ -28,7 +24,7 @@ public class VersionChecker {
 	public static File OSUDIR = new File("D://osu!");
 	private static final Gson gson = new Gson();
 	
-	public static void main(String[] args){
+	public static void maing(String[] args){
 		try {
 			Database.readDatabase();
 		} catch (IOException e) {
@@ -41,7 +37,7 @@ public class VersionChecker {
 		f.setVisible(true);
 	}
 
-	public static void mainl(String[] args){
+	public static void main(String[] args){
 		String APIKEY = args[0];
 		try {
 			Database.readDatabase();
@@ -51,7 +47,7 @@ public class VersionChecker {
 		}
 		FileManager.init();
 		for(BeatmapData data : Database.maps){
-			if(!(data.status == 4 || data.status == 5)){//4=ranked,5=approved,7=loved?,2=graveyard/pending,1=not submited>
+			if(!(data.status == 4 || data.status == 5)){//0=unknow,4=ranked,5=approved,7=loved?,2=graveyard/pending,1=not submited>
 				System.out.println(data.status + " " + data.title + " " + data.diff);
 			}
 		}
@@ -98,7 +94,6 @@ public class VersionChecker {
 		protected ReplaySelectionTab(){
 			this.setLayout(new BorderLayout());
 			JList<ListRenderable> beatmaps = new JList<ListRenderable>(FileManager.getBeatmaps());
-			DefaultListModel<ListRenderable> m = new DefaultListModel<ListRenderable>();
 			
 			beatmaps.setUI(new RListUI());
 			
