@@ -2,6 +2,8 @@ package me.roan.versionchecker;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -18,13 +20,14 @@ import com.google.gson.Gson;
 
 import me.roan.infinity.graphics.ui.RListUI;
 import me.roan.infinity.graphics.ui.RListUI.ListRenderable;
+import me.roan.versionchecker.FileManager.BeatmapItem;
 
 public class VersionChecker {
 	
 	public static File OSUDIR = new File("D://osu!");
 	private static final Gson gson = new Gson();
 	
-	public static void maing(String[] args){
+	public static void main(String[] args){
 		try {
 			Database.readDatabase();
 		} catch (IOException e) {
@@ -37,7 +40,7 @@ public class VersionChecker {
 		f.setVisible(true);
 	}
 
-	public static void main(String[] args){
+	public static void mainl(String[] args){
 		String APIKEY = args[0];
 		try {
 			Database.readDatabase();
@@ -94,6 +97,36 @@ public class VersionChecker {
 		protected ReplaySelectionTab(){
 			this.setLayout(new BorderLayout());
 			JList<ListRenderable> beatmaps = new JList<ListRenderable>(FileManager.getBeatmaps());
+			beatmaps.addMouseListener(new MouseListener(){
+
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					ListRenderable map = beatmaps.getSelectedValue();
+					if(map != null){
+						PrevieuwPlayer.playFile((BeatmapItem)map);
+					}
+				}
+
+				@Override
+				public void mousePressed(MouseEvent e) {					
+				}
+
+				@Override
+				public void mouseReleased(MouseEvent e) {				
+				}
+
+				@Override
+				public void mouseEntered(MouseEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void mouseExited(MouseEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+			});
 			
 			beatmaps.setUI(new RListUI());
 			

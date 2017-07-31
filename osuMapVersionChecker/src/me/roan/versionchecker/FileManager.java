@@ -60,7 +60,8 @@ public class FileManager{
 		public static final Color PINK = new Color(255, 102, 204);
 		public static final Color SELECTION_COLOR = new Color(0.0F, 1.0F, 1.0F, 0.3F);
 		private Image icon;
-		public final BeatmapData data;
+		public final BeatmapData local;
+		public BeatmapData online;
 		private static final ExecutorService imageLoader = Executors.newSingleThreadExecutor();
 
 		@Override
@@ -76,11 +77,15 @@ public class FileManager{
 			g.drawImage(icon, x + 4, y + 4, null);
 			g.setColor(PINK);
 			g.setFont(ftitle);
-			g.drawString(data.title, (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6, y + 12);
+			g.drawString(local.title + " [" + local.diff + "]", (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6, y + 12);
 			g.setColor(Color.BLACK);
 			g.setFont(finfo);
-			g.drawString(data.creator, (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6, y + 12 + 14);
-			g.drawString(data.diff, (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6, y + 12 + 14 + 15);
+			g.drawString(local.creator, (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6, y + 12 + 14);
+			g.drawString(local.hash, (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6, y + 12 + 14 + 15);
+		}
+		
+		public void setOnlineData(BeatmapData data){
+			this.online = data;
 		}
 		
 		private BeatmapItem(File file, BeatmapData data){
@@ -100,7 +105,7 @@ public class FileManager{
 					e.printStackTrace();
 				}
 			});
-			this.data = data;
+			this.local = data;
 		}
 	}
 }
