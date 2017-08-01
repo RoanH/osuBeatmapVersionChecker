@@ -81,17 +81,17 @@ public class FileManager{
 			g.drawImage(icon, x + 4, y + 4, null);//40 - 71
 			if(!playing && selected){
 				g.setColor(Color.WHITE);
-				int[] xs = new int[]{x + 4 + 16, x + 4 + 36, x + 4 + 16};
+				int[] xs = new int[]{x + 4 + 15, x + 4 + 36, x + 4 + 15};
 				int[] ys = new int[]{y + 4 + 10, y + 4 + 20, y + 4 + 30};
 				g.fillPolygon(xs, ys, 3);
 				g.setColor(Color.GRAY);
 				g.drawPolygon(xs, ys, 3);
 			}else if(playing){
 				g.setColor(Color.WHITE);
-				g.fillRect(x + 4 + 16, y + 4 + 10, 7, 20);
+				g.fillRect(x + 4 + 15, y + 4 + 10, 7, 20);
 				g.fillRect(x + 4 + 14 + 16, y + 4 + 10, 7, 20);
 				g.setColor(Color.GRAY);
-				g.drawRect(x + 4 + 16, y + 4 + 10, 7, 20);
+				g.drawRect(x + 4 + 15, y + 4 + 10, 7, 20);
 				g.drawRect(x + 4 + 14 + 16, y + 4 + 10, 7, 20);
 			}
 			g.setColor(PINK);
