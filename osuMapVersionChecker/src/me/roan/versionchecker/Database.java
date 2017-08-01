@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,9 +53,15 @@ public class Database {
 		in.skip(2);//skip number of spinners
 		in.skip(8);//XXX last modification time - last update?
 		if(version < 20140609){//XXX AR, CS, HP, OD
-			in.skip(4);
+			data.diff_approach = in.read();
+			data.diff_size = in.read();
+			data.diff_drain = in.read();
+			data.diff_overal = in.read();
 		}else{
-			in.skip(16);
+			data.diff_approach = readFloat(in);
+			data.diff_size = readFloat(in);
+			data.diff_drain = readFloat(in);
+			data.diff_overal = readFloat(in);
 		}
 		in.skip(8);
 		if(version >= 20140609){//TODO read the star ratings
@@ -92,6 +100,13 @@ public class Database {
 		in.read(arr);
 		ByteUtils.flipArray(arr);
 		return ByteUtils.byteArrayToInt(arr);
+	}
+	
+	public static float readFloat(InputStream in) throws IOException {
+		byte[] bytes = new byte[4];
+		in.read(bytes);
+		ByteBuffer bb = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN);
+		return bb.getFloat();
 	}
 	
 	public static String readString(InputStream in) throws IOException{

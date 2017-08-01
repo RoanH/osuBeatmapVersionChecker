@@ -22,10 +22,10 @@ public final class BeatmapData{
 	int approved;
 	int total_length;
 	String version;
-	int diff_size;
-	int diff_overal;
-	int diff_approach;
-	int diff_drain;
+	float diff_size;
+	float diff_overal;
+	float diff_approach;
+	float diff_drain;
 	int mode;
 	String approved_date;
 	String last_update;

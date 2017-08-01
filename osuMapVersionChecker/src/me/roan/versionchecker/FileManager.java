@@ -3,11 +3,18 @@ package me.roan.versionchecker;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.RenderingHints;
+import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -68,7 +75,10 @@ public class FileManager{
 		private boolean playing = false;
 
 		@Override
-		public void paint(Graphics g, int x, int y, int w, int h, boolean selected) {
+		public void paint(Graphics g1, int x, int y, int w, int h, boolean selected) {
+			Graphics2D g = (Graphics2D)g1;
+			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			this.y = y;
 			g.setColor(Color.LIGHT_GRAY.brighter());
 			g.fillRect(x, y, x + w, y + h);
@@ -84,13 +94,13 @@ public class FileManager{
 				int[] xs = new int[]{x + 4 + 15, x + 4 + 36, x + 4 + 15};
 				int[] ys = new int[]{y + 4 + 10, y + 4 + 20, y + 4 + 30};
 				g.fillPolygon(xs, ys, 3);
-				g.setColor(Color.GRAY);
+				g.setColor(Color.WHITE.darker());
 				g.drawPolygon(xs, ys, 3);
 			}else if(playing){
 				g.setColor(Color.WHITE);
 				g.fillRect(x + 4 + 15, y + 4 + 10, 7, 20);
 				g.fillRect(x + 4 + 14 + 16, y + 4 + 10, 7, 20);
-				g.setColor(Color.GRAY);
+				g.setColor(Color.WHITE.darker());
 				g.drawRect(x + 4 + 15, y + 4 + 10, 7, 20);
 				g.drawRect(x + 4 + 14 + 16, y + 4 + 10, 7, 20);
 			}
@@ -99,17 +109,23 @@ public class FileManager{
 			g.drawString(local.title + " [" + local.diff + "]", (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6, y + 12);
 			g.setColor(Color.BLACK);
 			g.setFont(finfo);
-			g.drawString("By" + local.creator, (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6, y + 12 + 14);
-			g.drawString(local.hash, (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6, y + 12 + 14 + 15);
+			g.drawString("By " + local.creator, (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6, y + 12 + 14);
+			g.drawString("CS: " + local.diff_size + " HP: " + local.diff_drain +  " AR: " + local.diff_approach + " OD: " + local.diff_overal + " Stars: " + " Length: ", (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6, y + 12 + 14 + 15);
 			
 			
 			//3 * 16 = 48 | 40 - 38:n 36:y12
 			g.setColor(PINK);
-			g.fillRect(w - 60, y + 4, 56, 12);
-			g.fillRect(w - 60, y + 18, 56, 12);
-			g.fillRect(w - 60, y + 32, 56, 12);
+			g.fillRect(w - 80, y + 4, 76, 19);
+			g.fillRect(w - 80, y + 25, 76, 19);
+			g.fillRect(w - 80 - 76 - 4, y + 13, 76, 22);
+			g.setColor(PINK.darker());
+			g.drawRect(w - 80, y + 4, 76, 19);
+			g.drawRect(w - 80, y + 25, 76, 19);
+			g.drawRect(w - 80 - 76 - 4, y + 13, 76, 22);
 			g.setColor(Color.WHITE);
-			g.drawString("osu! direct", (int) w - 60 + ((56 - g.getFontMetrics().stringWidth("osu! direct")) / 2), y + 12 + 14 + 16);
+			g.drawString("Beatmap page", (int) w - 80 - 76 - 4 + ((76 - g.getFontMetrics().stringWidth("Beatmap page")) / 2), y + 13 + 15);
+			g.drawString("Ingame link", (int) w - 80 + ((76 - g.getFontMetrics().stringWidth("Ingame link")) / 2), y + 17);
+			g.drawString("osu! direct", (int) w - 80 + ((76 - g.getFontMetrics().stringWidth("osu! direct")) / 2), y + 12 + 14 + 12);
 
 		}
 		
@@ -144,7 +160,7 @@ public class FileManager{
 					if(f.exists()){
 						icon = ImageIO.read(f).getScaledInstance(-1, 16 * 2 + 8, Image.SCALE_SMOOTH);
 					}
-				} catch (IOException e) {
+				} catch (IOException | NullPointerException | ArrayIndexOutOfBoundsException e) {
 					//This error is not very important, report it to standard error and move on.
 					System.err.println("Couldn't load beatmap icon for: " + data.title + "/" + data.setid + " icons:[small=" + new File(VersionChecker.OSUDIR + File.separator + "Data" + File.separator + "bt" + File.separator + data.setid + ".jpg").exists() + ",large=" + new File(VersionChecker.OSUDIR + File.separator + "Data" + File.separator + "bt" + File.separator + data.setid + "l.jpg").exists() + "]");
 					e.printStackTrace();
