@@ -99,8 +99,18 @@ public class FileManager{
 			g.drawString(local.title + " [" + local.diff + "]", (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6, y + 12);
 			g.setColor(Color.BLACK);
 			g.setFont(finfo);
-			g.drawString(local.creator, (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6, y + 12 + 14);
+			g.drawString("By" + local.creator, (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6, y + 12 + 14);
 			g.drawString(local.hash, (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6, y + 12 + 14 + 15);
+			
+			
+			//3 * 16 = 48 | 40 - 38:n 36:y12
+			g.setColor(PINK);
+			g.fillRect(w - 60, y + 4, 56, 12);
+			g.fillRect(w - 60, y + 18, 56, 12);
+			g.fillRect(w - 60, y + 32, 56, 12);
+			g.setColor(Color.WHITE);
+			g.drawString("osu! direct", (int) w - 60 + ((56 - g.getFontMetrics().stringWidth("osu! direct")) / 2), y + 12 + 14 + 16);
+
 		}
 		
 		public void cancelPlayingState(){
