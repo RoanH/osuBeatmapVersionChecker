@@ -68,11 +68,35 @@ public class Database {
 			data.diff_overal = readFloat(in);
 		}
 		in.skip(8);
-		if(version >= 20140609){//TODO read the star ratings
-			in.skip(readInt(in) * 14);//skip std star rating
-			in.skip(readInt(in) * 14);//skip taiko star rating
-			in.skip(readInt(in) * 14);//skip ctb star rating
-			in.skip(readInt(in) * 14);//skip mania star rating
+		double std_rating = 0.0D;
+		double taiko_rating = 0.0D;
+		double ctb_rating = 0.0D;
+		double mania_rating = 0.0D;
+		if(version >= 20140609){
+			for(int i = readInt(in); i > 0; i--){
+				double rating = readIntDoublePairNoModRating(in);
+				if(rating != -1){
+					std_rating = rating;
+				}
+			}
+			for(int i = readInt(in); i > 0; i--){
+				double rating = readIntDoublePairNoModRating(in);
+				if(rating != -1){
+					taiko_rating = rating;
+				}
+			}
+			for(int i = readInt(in); i > 0; i--){
+				double rating = readIntDoublePairNoModRating(in);
+				if(rating != -1){
+					ctb_rating = rating;
+				}
+			}
+			for(int i = readInt(in); i > 0; i--){
+				double rating = readIntDoublePairNoModRating(in);
+				if(rating != -1){
+					mania_rating = rating;
+				}
+			}
 		}
 		in.skip(4);
 		in.skip(4);//total time //XXX
@@ -83,6 +107,20 @@ public class Database {
 		in.skip(4);//skip thread id XXX
 		in.skip(10);
 		data.mode = in.read();
+		switch(data.mode){
+		case GM_STANDARD:
+			data.difficultyrating = std_rating;
+			break;
+		case GM_TAIKO:
+			data.difficultyrating = taiko_rating;
+			break;
+		case GM_MANIA:
+			data.difficultyrating = mania_rating;
+			break;
+		case GM_CTB:
+			data.difficultyrating = ctb_rating;
+			break;
+		}
 		readString(in);//skip song source XXX
 		readString(in);//skip song tags XXX
 		in.skip(2);
@@ -106,11 +144,30 @@ public class Database {
 		return ByteUtils.byteArrayToInt(arr);
 	}
 	
+	public static double readIntDoublePairNoModRating(InputStream in) throws IOException{
+		in.read();
+		int i = readInt(in);
+		in.read();
+		double d = readDouble(in);
+		if(i == 0){
+			return d;
+		}else{
+			return -1.0D;
+		}
+	}
+	
 	public static float readFloat(InputStream in) throws IOException {
 		byte[] bytes = new byte[4];
 		in.read(bytes);
 		ByteBuffer bb = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN);
 		return bb.getFloat();
+	}
+	
+	public static double readDouble(InputStream in) throws IOException {
+		byte[] bytes = new byte[8];
+		in.read(bytes);
+		ByteBuffer bb = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN);
+		return bb.getDouble();
 	}
 	
 	public static String readString(InputStream in) throws IOException{

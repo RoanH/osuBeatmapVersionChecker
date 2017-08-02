@@ -25,23 +25,23 @@ import javax.swing.ListModel;
 import me.roan.infinity.graphics.ui.RListUI.ListRenderable;
 
 public class FileManager{
-	
+
 	private static final DefaultListModel<ListRenderable> beatmapsModel = new DefaultListModel<ListRenderable>();
 
 	public static ListModel<ListRenderable> getBeatmaps(){
 		return beatmapsModel;
 	}
-	
+
 	protected static void init(){
 		addAll(beatmapsModel, parseB());
 	}
-	
+
 	private static final void addAll(DefaultListModel<ListRenderable> model, ListRenderable[] items){
 		for(ListRenderable p : items){
 			model.addElement(p);
 		}
 	}
-	
+
 	private static ItemBase[] parseB(){
 		BeatmapItem[] panels = new BeatmapItem[Database.maps.size()];
 		int i = 0;
@@ -53,18 +53,18 @@ public class FileManager{
 		}
 		return panels;
 	}
-	
+
 	private static abstract class ItemBase implements ListRenderable{
 		public final File file;
 		protected static final Font ftitle = new Font("Dialog", Font.BOLD, 12);
 		protected static final Font finfo = new Font("Dialog", Font.PLAIN, 11);
 		protected static final Font finfob = new Font("Dialog", Font.BOLD, 11);
-		
+
 		private ItemBase(File file){
 			this.file = file;
 		}
 	}
-	
+
 	public static final class BeatmapItem extends ItemBase{
 		public static final Color PINK = new Color(255, 102, 204);
 		public static final Color SELECTION_COLOR = new Color(0.0F, 1.0F, 1.0F, 0.3F);
@@ -112,34 +112,59 @@ public class FileManager{
 			g.setFont(finfo);
 			g.drawString("By " + local.creator, (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6, y + 12 + 14);
 			//status
-			String state = "Status: " + getStatus(local.status) + " > ";
+			String state = "Status: " + getStatus(local.status);
 			g.drawString(state, (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6, y + 12 + 14 + 15);
 			if(online != null){
 				if(local.status != online.status){
 					g.setColor(Color.RED);
+					g.drawString(" > " + getStatus(online.status), (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 1 + g.getFontMetrics().stringWidth(state), y + 12 + 14 + 15);
 				}
-				g.drawString(getStatus(online.status), (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 1 + g.getFontMetrics().stringWidth(state), y + 12 + 14 + 15);
 			}else{
 				g.setColor(Color.GRAY);
-				g.drawString("Loading", (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 1 + g.getFontMetrics().stringWidth(state), y + 12 + 14 + 15);
+				g.drawString(" > Loading", (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 1 + g.getFontMetrics().stringWidth(state), y + 12 + 14 + 15);
 			}
 			//attributes
 			g.setColor(Color.BLACK);
 			g.setFont(finfob);
 			int offset = g.getFontMetrics().stringWidth("CS: ");
-			g.drawString("CS: ", (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 200, y + 12 + 14);
-			g.drawString("AR: ", (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 200, y + 12 + 14 + 15);
-			g.drawString("HP: ", (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 200 + 100, y + 12 + 14);
-			g.drawString("OD: ", (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 200 + 100, y + 12 + 14 + 15);
+			g.drawString("CS: ", (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 180, y + 12 + 14);
+			g.drawString("AR: ", (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 180, y + 12 + 14 + 15);
+			g.drawString("HP: ", (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 180 + 100, y + 12 + 14);
+			g.drawString("OD: ", (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 180 + 100, y + 12 + 14 + 15);
 
 			g.setFont(finfo);
-			g.drawString(String.valueOf(local.diff_size),      (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 200 + offset, y + 12 + 14);
-			g.drawString(String.valueOf(local.diff_approach),  (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 200 + offset, y + 12 + 14 + 15);
-			g.drawString(String.valueOf(local.diff_drain),     (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 200 + offset + 100, y + 12 + 14);
-			g.drawString(String.valueOf(local.diff_overal),    (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 200 + offset + 100, y + 12 + 14 + 15);
+			g.drawString(String.valueOf(local.diff_size),      (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 180 + offset, y + 12 + 14);
+			g.drawString(String.valueOf(local.diff_approach),  (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 180 + offset, y + 12 + 14 + 15);
+			g.drawString(String.valueOf(local.diff_drain),     (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 180 + offset + 100, y + 12 + 14);
+			g.drawString(String.valueOf(local.diff_overal),    (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 180 + offset + 100, y + 12 + 14 + 15);
 
-			
-			
+			if(online != null){
+				offset += g.getFontMetrics().stringWidth("10.0 ");
+				g.setFont(finfo);
+				if(local.diff_size != online.diff_size){
+					g.setColor(Color.RED);
+					g.drawString(">  " + online.diff_size,      (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 180 + offset, y + 12 + 14);
+				}
+				if(local.diff_approach != online.diff_approach){
+					g.setColor(Color.RED);
+					g.drawString(">  " + online.diff_approach,  (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 180 + offset, y + 12 + 14 + 15);
+				}
+				if(local.diff_drain != online.diff_drain){
+					g.setColor(Color.RED);
+					g.drawString(">  " + online.diff_drain,     (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 180 + offset + 100, y + 12 + 14);
+				}
+				if(local.diff_overal != online.diff_overal){
+					g.setColor(Color.RED);
+					g.drawString(">  " + online.diff_overal,    (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 180 + offset + 100, y + 12 + 14 + 15);
+				}
+			}
+
+			g.setFont(finfob);
+			g.setColor(Color.BLACK);
+			g.drawString("Stars: " + String.format("%f#.3",  local.difficultyrating),      (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 375, y + 12 + 14);
+			g.drawString("Length: ",  (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 375, y + 12 + 14 + 15);
+
+
 			//3 * 16 = 48 | 40 - 38:n 36:y12
 			g.setColor(PINK);
 			g.fillRect(w - 80, y + 4, 76, 19);
@@ -155,16 +180,16 @@ public class FileManager{
 			g.drawString("osu! direct", (int) w - 80 + ((76 - g.getFontMetrics().stringWidth("osu! direct")) / 2), y + 12 + 14 + 12);
 
 		}
-		
+
 		//0=unknow,4=ranked,5=approved,7=loved?,2=graveyard/pending,1=not submited>
 		private static String getStatus(int id){
 			return id == 1 ? "Not submitted" : (id == 2 ? "Pending" : (id == 4 ? "Ranked" : (id == 5 ? "Approved" : (id == 7 ? "Loved" : "Unknow"))));
 		}
-		
+
 		public void cancelPlayingState(){
 			playing = false;
 		}
-		
+
 		public void onMouseEvent(MouseEvent e){
 			if(e.getX() > 4 && e.getX() < 4 + 71 && e.getY() > y + 4 && e.getY() < y + 4 + 40){
 				if(!playing){
@@ -176,11 +201,11 @@ public class FileManager{
 				e.getComponent().repaint();
 			}
 		}
-		
+
 		public void setOnlineData(BeatmapData data){
 			this.online = data;
 		}
-		
+
 		private BeatmapItem(File file, BeatmapData data){
 			super(file);
 			imageLoader.submit(()->{

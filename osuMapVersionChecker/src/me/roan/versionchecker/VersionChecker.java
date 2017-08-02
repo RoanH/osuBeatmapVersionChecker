@@ -38,6 +38,7 @@ public class VersionChecker {
 		FileManager.init();
 		JFrame f = new JFrame();
 		f.add(new ReplaySelectionTab());
+		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.setVisible(true);
 	}
 
