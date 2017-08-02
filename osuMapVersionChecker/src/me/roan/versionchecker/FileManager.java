@@ -26,7 +26,6 @@ import me.roan.infinity.graphics.ui.RListUI.ListRenderable;
 
 public class FileManager{
 	
-	private static ItemBase[] beatmaps;
 	private static final DefaultListModel<ListRenderable> beatmapsModel = new DefaultListModel<ListRenderable>();
 
 	public static ListModel<ListRenderable> getBeatmaps(){
@@ -44,10 +43,12 @@ public class FileManager{
 	}
 	
 	private static ItemBase[] parseB(){
-		ItemBase[] panels = new ItemBase[Database.maps.size()];
+		BeatmapItem[] panels = new BeatmapItem[Database.maps.size()];
 		int i = 0;
+		BeatmapData dummy = Database.maps.get(0);//TODO temporary
 		for(BeatmapData data : Database.maps){
 			panels[i] = new BeatmapItem(new File(VersionChecker.OSUDIR, "Songs" + File.separator + data.songfolder), data);
+			panels[i].setOnlineData(dummy);
 			i++;
 		}
 		return panels;
@@ -57,7 +58,7 @@ public class FileManager{
 		public final File file;
 		protected static final Font ftitle = new Font("Dialog", Font.BOLD, 12);
 		protected static final Font finfo = new Font("Dialog", Font.PLAIN, 11);
-		protected static final Font fmods = new Font("Dialog", Font.BOLD, 11);
+		protected static final Font finfob = new Font("Dialog", Font.BOLD, 11);
 		
 		private ItemBase(File file){
 			this.file = file;
@@ -110,7 +111,33 @@ public class FileManager{
 			g.setColor(Color.BLACK);
 			g.setFont(finfo);
 			g.drawString("By " + local.creator, (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6, y + 12 + 14);
-			g.drawString("CS: " + local.diff_size + " HP: " + local.diff_drain +  " AR: " + local.diff_approach + " OD: " + local.diff_overal + " Stars: " + " Length: ", (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6, y + 12 + 14 + 15);
+			//status
+			String state = "Status: " + getStatus(local.status) + " > ";
+			g.drawString(state, (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6, y + 12 + 14 + 15);
+			if(online != null){
+				if(local.status != online.status){
+					g.setColor(Color.RED);
+				}
+				g.drawString(getStatus(online.status), (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 1 + g.getFontMetrics().stringWidth(state), y + 12 + 14 + 15);
+			}else{
+				g.setColor(Color.GRAY);
+				g.drawString("Loading", (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 1 + g.getFontMetrics().stringWidth(state), y + 12 + 14 + 15);
+			}
+			//attributes
+			g.setColor(Color.BLACK);
+			g.setFont(finfob);
+			int offset = g.getFontMetrics().stringWidth("CS: ");
+			g.drawString("CS: ", (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 200, y + 12 + 14);
+			g.drawString("AR: ", (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 200, y + 12 + 14 + 15);
+			g.drawString("HP: ", (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 200 + 100, y + 12 + 14);
+			g.drawString("OD: ", (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 200 + 100, y + 12 + 14 + 15);
+
+			g.setFont(finfo);
+			g.drawString(String.valueOf(local.diff_size),      (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 200 + offset, y + 12 + 14);
+			g.drawString(String.valueOf(local.diff_approach),  (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 200 + offset, y + 12 + 14 + 15);
+			g.drawString(String.valueOf(local.diff_drain),     (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 200 + offset + 100, y + 12 + 14);
+			g.drawString(String.valueOf(local.diff_overal),    (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 200 + offset + 100, y + 12 + 14 + 15);
+
 			
 			
 			//3 * 16 = 48 | 40 - 38:n 36:y12
@@ -127,6 +154,11 @@ public class FileManager{
 			g.drawString("Ingame link", (int) w - 80 + ((76 - g.getFontMetrics().stringWidth("Ingame link")) / 2), y + 17);
 			g.drawString("osu! direct", (int) w - 80 + ((76 - g.getFontMetrics().stringWidth("osu! direct")) / 2), y + 12 + 14 + 12);
 
+		}
+		
+		//0=unknow,4=ranked,5=approved,7=loved?,2=graveyard/pending,1=not submited>
+		private static String getStatus(int id){
+			return id == 1 ? "Not submitted" : (id == 2 ? "Pending" : (id == 4 ? "Ranked" : (id == 5 ? "Approved" : (id == 7 ? "Loved" : "Unknow"))));
 		}
 		
 		public void cancelPlayingState(){

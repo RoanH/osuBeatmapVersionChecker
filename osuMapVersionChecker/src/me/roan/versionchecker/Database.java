@@ -18,6 +18,10 @@ public class Database {
 	
 	private static int version;//osu! version, not that anyone still uses an old version
 	public static final List<BeatmapData> maps = new ArrayList<BeatmapData>();
+	public static final int GM_STANDARD= 0;
+	public static final int GM_CTB= 2;
+	public static final int GM_MANIA= 3;
+	public static final int GM_TAIKO= 1;
 	
 	public static final void readDatabase() throws IOException{
 		FileInputStream in = new FileInputStream(new File(VersionChecker.OSUDIR, "osu!.db"));
@@ -78,7 +82,7 @@ public class Database {
 		data.setid = readInt(in);
 		in.skip(4);//skip thread id XXX
 		in.skip(10);
-		in.skip(1);//XXX gamemode
+		data.mode = in.read();
 		readString(in);//skip song source XXX
 		readString(in);//skip song tags XXX
 		in.skip(2);
