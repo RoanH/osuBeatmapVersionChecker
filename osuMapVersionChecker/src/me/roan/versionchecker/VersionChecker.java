@@ -2,9 +2,10 @@ package me.roan.versionchecker;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -37,7 +38,9 @@ public class VersionChecker {
 		}
 		FileManager.init();
 		JFrame f = new JFrame();
-		f.add(new ReplaySelectionTab());
+		f.setMinimumSize(new Dimension(760, 400));
+		f.setSize(new Dimension(Toolkit.getDefaultToolkit().getScreenSize().width / 2, Toolkit.getDefaultToolkit().getScreenSize().height / 2));
+		f.add(new BeatmapListing());
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.setVisible(true);
 	}
@@ -89,14 +92,14 @@ public class VersionChecker {
 	}
 	
 
-	public static class ReplaySelectionTab extends JPanel{
+	public static class BeatmapListing extends JPanel{
 
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = -2744302397899309168L;
 
-		protected ReplaySelectionTab(){
+		protected BeatmapListing(){
 			this.setLayout(new BorderLayout());
 			JList<ListRenderable> beatmaps = new JList<ListRenderable>(FileManager.getBeatmaps());
 			beatmaps.addMouseListener(new MouseListener(){

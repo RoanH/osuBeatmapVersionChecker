@@ -6,15 +6,9 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
-import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -24,7 +18,6 @@ import javax.swing.DefaultListModel;
 import javax.swing.ListModel;
 
 import me.roan.infinity.graphics.ui.RListUI.ListRenderable;
-import me.roan.infinity.util.Time;
 
 public class FileManager{
 
@@ -75,6 +68,7 @@ public class FileManager{
 		public BeatmapData online;
 		private static final ExecutorService imageLoader = Executors.newSingleThreadExecutor();
 		private int y;
+		private int w;
 		private boolean playing = false;
 
 		@Override
@@ -83,6 +77,7 @@ public class FileManager{
 			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			this.y = y;
+			this.w = w;
 			g.setColor(Color.LIGHT_GRAY.brighter());
 			g.fillRect(x, y, x + w, y + h);
 			if(selected){
@@ -220,6 +215,12 @@ public class FileManager{
 					PrevieuwPlayer.stop();
 				}
 				e.getComponent().repaint();
+			}else if(e.getX() > w - 80 && e.getX() < w - 4 && e.getY() > y + 4 && e.getY() < y + 23){
+				System.out.println("A");
+			}else if(e.getX() > w - 80 && e.getX() < w - 4 && e.getY() > y + 25 && e.getY() < y + 44){
+				System.out.println("B");
+			}else if(e.getX() > w - 80 - 76 && e.getX() < w - 4 - 76 && e.getY() > y + 13 && e.getY() < y + 35){
+				System.out.println("C");
 			}
 		}
 
