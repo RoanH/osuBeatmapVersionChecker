@@ -17,12 +17,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 import javax.swing.DefaultListModel;
 import javax.swing.ListModel;
 
 import me.roan.infinity.graphics.ui.RListUI.ListRenderable;
+import me.roan.infinity.util.Time;
 
 public class FileManager{
 
@@ -161,10 +163,29 @@ public class FileManager{
 
 			g.setFont(finfob);
 			g.setColor(Color.BLACK);
-			g.drawString("Stars: " + String.format("%f#.3",  local.difficultyrating),      (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 375, y + 12 + 14);
+			g.drawString("Stars: ",      (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 375, y + 12 + 14);
 			g.drawString("Length: ",  (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 375, y + 12 + 14 + 15);
-
-
+			int soff = g.getFontMetrics().stringWidth("Stars: ");
+			int loff = g.getFontMetrics().stringWidth("Length: ");
+			g.setFont(finfo);
+			g.drawString(String.format("%1$.2f",  local.difficultyrating), (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 375 + soff, y + 12 + 14);
+			g.drawString(String.format("%02d:%02d",
+				    TimeUnit.MILLISECONDS.toMinutes(local.total_length) % TimeUnit.HOURS.toMinutes(1),
+				    TimeUnit.MILLISECONDS.toSeconds(local.total_length) % TimeUnit.MINUTES.toSeconds(1)),  (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 375 + loff, y + 12 + 14 + 15);
+			if(online != null){
+				if(local.difficultyrating != online.difficultyrating){
+					g.setColor(Color.RED);
+					g.drawString("> " + String.format("%1$.2f",  online.difficultyrating),      (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 375 + soff + g.getFontMetrics().stringWidth("00.00 "), y + 12 + 14);
+				}
+				if(local.total_length != online.total_length){
+					g.setColor(Color.RED);
+					g.drawString("> " + String.format("%02d:%02d",
+						    TimeUnit.MILLISECONDS.toMinutes(online.total_length) % TimeUnit.HOURS.toMinutes(1),
+						    TimeUnit.MILLISECONDS.toSeconds(online.total_length) % TimeUnit.MINUTES.toSeconds(1)),  (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 375 + loff + g.getFontMetrics().stringWidth("00:00 "), y + 12 + 14 + 15);
+				
+				}
+			}
+			
 			//3 * 16 = 48 | 40 - 38:n 36:y12
 			g.setColor(PINK);
 			g.fillRect(w - 80, y + 4, 76, 19);

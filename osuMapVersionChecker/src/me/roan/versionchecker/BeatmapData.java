@@ -5,6 +5,7 @@ public final class BeatmapData{
 	public String artist;
 	public String title;
 	public String creator;
+	public int total_length;
 	
 	//local only
 	public String songfolder;
@@ -20,7 +21,7 @@ public final class BeatmapData{
 	public int mapid;
 	public int setid;
 	int approved;
-	int total_length;
+	
 	String version;
 	float diff_size;
 	float diff_overal;
