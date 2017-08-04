@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.advanced.AdvancedPlayer;
@@ -22,9 +21,11 @@ public class PrevieuwPlayer {
 		}
 		executor.submit(()->{
 			try {				
+				System.out.println("Preview play start / " + data.local.preview_time);
 				player = new AdvancedPlayer(new FileInputStream(new File(data.file, data.local.audiofile)));
 				player.setLineGain(-20F);
-				player.play();
+				player.playSection(data.local.preview_time, 30000);
+				System.out.println("Preview play end");
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

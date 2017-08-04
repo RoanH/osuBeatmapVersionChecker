@@ -222,6 +222,25 @@ public class AdvancedPlayer
 		while (offset-- > 0 && ret) ret = skipFrame();
 		return play(end - start);
 	}
+	
+	/**
+	 * Plays a range of audio frames
+	 * @param startms	Start ms
+	 * @param endms		ms to play for
+	 * @return true if the last frame was played, or false if there are more frames.
+	 */
+	public boolean playSection(final int startms, final int ms) throws JavaLayerException{
+		float msf = bitstream.readFrame().ms_per_frame();
+		bitstream.closeFrame();
+		int skip = (int) ((float)startms / msf);
+		while(skip > 0){
+			if(!skipFrame()){
+				return true;
+			}
+			skip--;
+		}
+		return play((int) (((float)ms) / msf));
+	}
 
 	/**
 	 * Constructs a <code>PlaybackEvent</code>

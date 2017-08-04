@@ -100,7 +100,7 @@ public class Database {
 		}
 		in.skip(4);
 		data.total_length = readInt(in);
-		in.skip(4);//preview time XXX
+		data.preview_time = readInt(in);
 		in.skip(readInt(in) * 17);
 		data.mapid = readInt(in);
 		data.setid = readInt(in);

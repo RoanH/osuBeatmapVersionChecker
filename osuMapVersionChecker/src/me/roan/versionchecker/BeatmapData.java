@@ -10,6 +10,7 @@ public final class BeatmapData{
 	//local only
 	public String songfolder;
 	public String audiofile;
+	public int preview_time;
 	
 	
 	
