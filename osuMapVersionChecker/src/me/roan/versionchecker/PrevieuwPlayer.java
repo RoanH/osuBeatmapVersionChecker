@@ -21,11 +21,9 @@ public class PrevieuwPlayer {
 		}
 		executor.submit(()->{
 			try {				
-				System.out.println("Preview play start / " + data.local.preview_time);
 				player = new AdvancedPlayer(new FileInputStream(new File(data.file, data.local.audiofile)));
 				player.setLineGain(-20F);
-				player.playSection(data.local.preview_time, 30000);
-				System.out.println("Preview play end");
+				player.playSection(data.local.previeuw_time, 30000);
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
