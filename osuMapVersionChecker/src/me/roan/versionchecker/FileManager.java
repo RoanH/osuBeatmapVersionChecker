@@ -37,7 +37,7 @@ public class FileManager{
 		}
 	}
 
-	private static ItemBase[] parseB(){
+	private static BeatmapItem[] parseB(){
 		BeatmapItem[] panels = new BeatmapItem[Database.maps.size()];
 		int i = 0;
 		BeatmapData dummy = Database.maps.get(0);//TODO temporary
@@ -49,18 +49,11 @@ public class FileManager{
 		return panels;
 	}
 
-	private static abstract class ItemBase implements ListRenderable{
+	public static final class BeatmapItem implements ListRenderable{
 		public final File file;
 		protected static final Font ftitle = new Font("Dialog", Font.BOLD, 12);
 		protected static final Font finfo = new Font("Dialog", Font.PLAIN, 11);
 		protected static final Font finfob = new Font("Dialog", Font.BOLD, 11);
-
-		private ItemBase(File file){
-			this.file = file;
-		}
-	}
-
-	public static final class BeatmapItem extends ItemBase{
 		public static final Color PINK = new Color(255, 102, 204);
 		public static final Color SELECTION_COLOR = new Color(0.0F, 1.0F, 1.0F, 0.3F);
 		private Image icon;
@@ -194,7 +187,6 @@ public class FileManager{
 			g.drawString("Beatmap page", (int) w - 80 - 76 - 4 + ((76 - g.getFontMetrics().stringWidth("Beatmap page")) / 2), y + 13 + 15);
 			g.drawString("Ingame link", (int) w - 80 + ((76 - g.getFontMetrics().stringWidth("Ingame link")) / 2), y + 17);
 			g.drawString("osu! direct", (int) w - 80 + ((76 - g.getFontMetrics().stringWidth("osu! direct")) / 2), y + 12 + 14 + 12);
-
 		}
 
 		//0=unknow,4=ranked,5=approved,7=loved?,2=graveyard/pending,1=not submited>
@@ -216,11 +208,11 @@ public class FileManager{
 				}
 				e.getComponent().repaint();
 			}else if(e.getX() > w - 80 && e.getX() < w - 4 && e.getY() > y + 4 && e.getY() < y + 23){
-				System.out.println("A");
+				System.out.println("A");//TODO ingame link
 			}else if(e.getX() > w - 80 && e.getX() < w - 4 && e.getY() > y + 25 && e.getY() < y + 44){
-				System.out.println("B");
+				System.out.println("B");//TODO  osu! direct
 			}else if(e.getX() > w - 80 - 76 && e.getX() < w - 4 - 76 && e.getY() > y + 13 && e.getY() < y + 35){
-				System.out.println("C");
+				System.out.println("C");//TODO beatmap page
 			}
 		}
 
@@ -229,7 +221,7 @@ public class FileManager{
 		}
 
 		private BeatmapItem(File file, BeatmapData data){
-			super(file);
+			this.file = file;
 			imageLoader.submit(()->{
 				try {
 					File f = new File(VersionChecker.OSUDIR + File.separator + "Data" + File.separator + "bt" + File.separator + data.setid + ".jpg");

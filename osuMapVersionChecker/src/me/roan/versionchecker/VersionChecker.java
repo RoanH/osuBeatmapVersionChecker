@@ -14,10 +14,15 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
 import com.google.gson.Gson;
 
 import me.roan.infinity.graphics.ui.RListUI;
@@ -37,12 +42,39 @@ public class VersionChecker {
 			e.printStackTrace();
 		}
 		FileManager.init();
-		JFrame f = new JFrame();
-		f.setMinimumSize(new Dimension(760, 400));
-		f.setSize(new Dimension(Toolkit.getDefaultToolkit().getScreenSize().width / 2, Toolkit.getDefaultToolkit().getScreenSize().height / 2));
-		f.add(new BeatmapListing());
-		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		f.setVisible(true);
+		createGUI();
+	}
+	
+	public static void createGUI(){
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
+		}
+		JFrame frame = new JFrame();
+		JPanel content = new JPanel(new BorderLayout());
+		JTabbedPane categories = new JTabbedPane();
+		
+		BeatmapItemMouseListener listener = new BeatmapItemMouseListener();
+		
+		JList<ListRenderable> beatmaps = new JList<ListRenderable>(FileManager.getBeatmaps());
+		beatmaps.addMouseListener(listener);
+		beatmaps.setUI(new RListUI());
+		((RListUI)beatmaps.getUI()).setBackground(Color.LIGHT_GRAY.brighter());
+		beatmaps.setFixedCellHeight(16 * 3);
+		beatmaps.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		
+		categories.addTab("All unranked beatmaps (" + beatmaps.getModel().getSize() + ")", new JScrollPane(beatmaps));
+		
+		categories.addTab("State changed", new JLabel("TODO"));
+		categories.addTab("Update available", new JLabel("TODO"));
+				
+		content.add(categories, BorderLayout.CENTER);
+		
+		frame.add(content);
+		frame.setMinimumSize(new Dimension(760, 400));
+		frame.setSize(new Dimension(Toolkit.getDefaultToolkit().getScreenSize().width / 2, Toolkit.getDefaultToolkit().getScreenSize().height / 2));
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setVisible(true);
 	}
 
 	public static void mainl(String[] args){
@@ -91,56 +123,31 @@ public class VersionChecker {
 		}
 	}
 	
+	private static final class BeatmapItemMouseListener implements MouseListener{
 
-	public static class BeatmapListing extends JPanel{
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			@SuppressWarnings("unchecked")
+			ListRenderable map = ((JList<ListRenderable>)e.getSource()).getSelectedValue();
+			if(map != null){
+				((BeatmapItem)map).onMouseEvent(e);
+			}
+		}
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = -2744302397899309168L;
+		@Override
+		public void mousePressed(MouseEvent e) {					
+		}
 
-		protected BeatmapListing(){
-			this.setLayout(new BorderLayout());
-			JList<ListRenderable> beatmaps = new JList<ListRenderable>(FileManager.getBeatmaps());
-			beatmaps.addMouseListener(new MouseListener(){
+		@Override
+		public void mouseReleased(MouseEvent e) {				
+		}
 
-				@Override
-				public void mouseClicked(MouseEvent e) {
-					ListRenderable map = beatmaps.getSelectedValue();
-					if(map != null){
-						((BeatmapItem)map).onMouseEvent(e);
-					}
-				}
+		@Override
+		public void mouseEntered(MouseEvent e) {
+		}
 
-				@Override
-				public void mousePressed(MouseEvent e) {					
-				}
-
-				@Override
-				public void mouseReleased(MouseEvent e) {				
-				}
-
-				@Override
-				public void mouseEntered(MouseEvent e) {
-				}
-
-				@Override
-				public void mouseExited(MouseEvent e) {
-				}
-			});
-	
-			beatmaps.setUI(new RListUI());
-			
-			((RListUI)beatmaps.getUI()).setBackground(Color.LIGHT_GRAY.brighter());
-			beatmaps.setFixedCellHeight(16 * 3);
-			beatmaps.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-			
-			this.add(new JScrollPane(beatmaps), BorderLayout.CENTER);
-			
-			JPanel header = new JPanel(new BorderLayout());
-			
-
-			this.add(header, BorderLayout.PAGE_START);
+		@Override
+		public void mouseExited(MouseEvent e) {
 		}
 	}
 }
