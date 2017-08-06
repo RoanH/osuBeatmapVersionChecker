@@ -12,6 +12,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -33,6 +37,8 @@ public class VersionChecker {
 	
 	public static File OSUDIR = new File("D://osu!");
 	private static final Gson gson = new Gson();
+	protected static Queue<Runnable> updateQueue = new ConcurrentLinkedQueue<Runnable>();
+	private static final JList<ListRenderable> beatmaps = new JList<ListRenderable>(FileManager.getBeatmaps());
 	
 	public static void main(String[] args){
 		try {
@@ -43,6 +49,10 @@ public class VersionChecker {
 		}
 		FileManager.init();
 		createGUI();
+		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(()->{
+			updateQueue.poll().run();
+			beatmaps.repaint();
+		}, 0, 2, TimeUnit.SECONDS);//TODO change
 	}
 	
 	public static void createGUI(){
@@ -56,7 +66,6 @@ public class VersionChecker {
 		
 		BeatmapItemMouseListener listener = new BeatmapItemMouseListener();
 		
-		JList<ListRenderable> beatmaps = new JList<ListRenderable>(FileManager.getBeatmaps());
 		beatmaps.addMouseListener(listener);
 		beatmaps.setUI(new RListUI());
 		((RListUI)beatmaps.getUI()).setBackground(Color.LIGHT_GRAY.brighter());
@@ -99,6 +108,10 @@ public class VersionChecker {
 		//BeatmapData map = gson.fromJson(req.substring(1, req.length() - 1), BeatmapData.class);
 		
 		System.out.println(Database.maps.size());
+	}
+	
+	protected static BeatmapData checkState(BeatmapData local){
+		return local;//TODO implement
 	}
 	
 	/**

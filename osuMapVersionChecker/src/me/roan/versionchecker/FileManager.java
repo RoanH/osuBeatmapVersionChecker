@@ -22,6 +22,9 @@ import me.roan.infinity.graphics.ui.RListUI.ListRenderable;
 public class FileManager{
 
 	private static final DefaultListModel<ListRenderable> beatmapsModel = new DefaultListModel<ListRenderable>();
+	private static final DefaultListModel<ListRenderable> beatmapsUpdateModel = new DefaultListModel<ListRenderable>();
+	private static final DefaultListModel<ListRenderable> beatmapsStateModel = new DefaultListModel<ListRenderable>();
+
 
 	public static ListModel<ListRenderable> getBeatmaps(){
 		return beatmapsModel;
@@ -40,10 +43,12 @@ public class FileManager{
 	private static BeatmapItem[] parseB(){
 		BeatmapItem[] panels = new BeatmapItem[Database.maps.size()];
 		int i = 0;
-		BeatmapData dummy = Database.maps.get(0);//TODO temporary
 		for(BeatmapData data : Database.maps){
-			panels[i] = new BeatmapItem(new File(VersionChecker.OSUDIR, "Songs" + File.separator + data.songfolder), data);
-			panels[i].setOnlineData(dummy);
+			BeatmapItem local = new BeatmapItem(new File(VersionChecker.OSUDIR, "Songs" + File.separator + data.songfolder), data);
+			panels[i] = local;
+			VersionChecker.updateQueue.add(()->{
+				local.setOnlineData(VersionChecker.checkState(data));
+			});
 			i++;
 		}
 		return panels;

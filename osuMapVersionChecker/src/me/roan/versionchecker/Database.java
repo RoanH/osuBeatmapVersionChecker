@@ -52,11 +52,9 @@ public class Database {
 		data.hash = readString(in);
 		data.osufilename = readString(in);
 		data.status = in.read();
-		in.skip(2);//skip number of circles
-		in.skip(2);//skip number of sliders
-		in.skip(2);//skip number of spinners
+		in.skip(6);
 		in.skip(8);//XXX last modification time - last update?
-		if(version < 20140609){//XXX AR, CS, HP, OD
+		if(version < 20140609){
 			data.diff_approach = in.read();
 			data.diff_size = in.read();
 			data.diff_drain = in.read();
@@ -121,8 +119,8 @@ public class Database {
 			data.difficultyrating = ctb_rating;
 			break;
 		}
-		readString(in);//skip song source XXX
-		readString(in);//skip song tags XXX
+		readString(in);
+		readString(in);
 		in.skip(2);
 		readString(in);
 		in.skip(10);
