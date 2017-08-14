@@ -58,12 +58,12 @@ public class Database {
 			data.diff_approach = in.read();
 			data.diff_size = in.read();
 			data.diff_drain = in.read();
-			data.diff_overal = in.read();
+			data.diff_overall = in.read();
 		}else{
 			data.diff_approach = readFloat(in);
 			data.diff_size = readFloat(in);
 			data.diff_drain = readFloat(in);
-			data.diff_overal = readFloat(in);
+			data.diff_overall = readFloat(in);
 		}
 		in.skip(8);
 		double std_rating = 0.0D;

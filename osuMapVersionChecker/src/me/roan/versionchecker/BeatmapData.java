@@ -6,33 +6,33 @@ public final class BeatmapData{
 	public String title;
 	public String creator;
 	public int total_length;
+	public double difficultyrating;
+	public float diff_size;
+	public float diff_overall;
+	public float diff_approach;
+	public float diff_drain;
 	
 	//local only
 	public String songfolder;
 	public String audiofile;
 	public int previeuw_time;
-	
-	
-	
-	
 	public int status;
+	
+	//online only
+	public int approved;
+	
+	
 	public String diff;
 	public String hash;
 	public String osufilename;
 	public int mapid;
 	public int setid;
-	int approved;
+	
 	
 	String version;
-	float diff_size;
-	float diff_overal;
-	float diff_approach;
-	float diff_drain;
+	
 	int mode;
 	String approved_date;
 	String last_update;
-	int bpm;
-	String source;
-	String tags;
-	double difficultyrating;
+	
 }

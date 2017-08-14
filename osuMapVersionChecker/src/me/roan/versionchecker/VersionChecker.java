@@ -18,7 +18,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -35,12 +34,18 @@ import me.roan.versionchecker.FileManager.BeatmapItem;
 
 public class VersionChecker {
 	
-	public static File OSUDIR = new File("D://osu!");
+	public static File OSUDIR = new File("C://Users//RoanH//Documents//osu!");
 	private static final Gson gson = new Gson();
 	protected static Queue<Runnable> updateQueue = new ConcurrentLinkedQueue<Runnable>();
-	private static final JList<ListRenderable> beatmaps = new JList<ListRenderable>(FileManager.getBeatmaps());
+	private static final JList<ListRenderable> beatmaps = new JList<ListRenderable>(FileManager.beatmapsModel);
+	private static final JList<ListRenderable> beatmapsUpdate = new JList<ListRenderable>(FileManager.beatmapsUpdateModel);
+	private static final JList<ListRenderable> beatmapsState = new JList<ListRenderable>(FileManager.beatmapsStateModel);
+	protected static String APIKEY;
+	protected static JTabbedPane categories;
+
 	
 	public static void main(String[] args){
+		APIKEY = args[0];
 		try {
 			Database.readDatabase();
 		} catch (IOException e) {
@@ -50,9 +55,12 @@ public class VersionChecker {
 		FileManager.init();
 		createGUI();
 		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(()->{
-			updateQueue.poll().run();
-			beatmaps.repaint();
-		}, 0, 2, TimeUnit.SECONDS);//TODO change
+			if(!updateQueue.isEmpty()){
+				updateQueue.poll().run();
+				beatmaps.repaint();
+			}
+			System.out.println("Queue size: " + updateQueue.size());
+		}, 0, 10, TimeUnit.SECONDS);//TODO change
 	}
 	
 	public static void createGUI(){
@@ -62,7 +70,7 @@ public class VersionChecker {
 		}
 		JFrame frame = new JFrame();
 		JPanel content = new JPanel(new BorderLayout());
-		JTabbedPane categories = new JTabbedPane();
+		categories = new JTabbedPane();
 		
 		BeatmapItemMouseListener listener = new BeatmapItemMouseListener();
 		
@@ -72,10 +80,22 @@ public class VersionChecker {
 		beatmaps.setFixedCellHeight(16 * 3);
 		beatmaps.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
+		beatmapsState.addMouseListener(listener);
+		beatmapsState.setUI(new RListUI());
+		((RListUI)beatmapsState.getUI()).setBackground(Color.LIGHT_GRAY.brighter());
+		beatmapsState.setFixedCellHeight(16 * 3);
+		beatmapsState.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		
+		beatmapsUpdate.addMouseListener(listener);
+		beatmapsUpdate.setUI(new RListUI());
+		((RListUI)beatmapsUpdate.getUI()).setBackground(Color.LIGHT_GRAY.brighter());
+		beatmapsUpdate.setFixedCellHeight(16 * 3);
+		beatmapsUpdate.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		
 		categories.addTab("All unranked beatmaps (" + beatmaps.getModel().getSize() + ")", new JScrollPane(beatmaps));
 		
-		categories.addTab("State changed", new JLabel("TODO"));
-		categories.addTab("Update available", new JLabel("TODO"));
+		categories.addTab("State changed (0)", new JScrollPane(beatmapsState));
+		categories.addTab("Update available (0)", new JScrollPane(beatmapsUpdate));
 				
 		content.add(categories, BorderLayout.CENTER);
 		
@@ -111,7 +131,19 @@ public class VersionChecker {
 	}
 	
 	protected static BeatmapData checkState(BeatmapData local){
-		return local;//TODO implement
+		String req = getPage("https://osu.ppy.sh/api/get_beatmaps?k=" + APIKEY + "&h=" + local.hash);
+		System.out.println(req);
+		if(req == null){
+			return null;//TODO
+		}
+		BeatmapData data = null;
+		try{
+			data = gson.fromJson(req.substring(1, req.length() - 1), BeatmapData.class);
+		}catch(Throwable t){
+			t.printStackTrace();
+		}
+		System.out.println("data: " + data);
+		return data;
 	}
 	
 	/**

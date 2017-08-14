@@ -21,14 +21,9 @@ import me.roan.infinity.graphics.ui.RListUI.ListRenderable;
 
 public class FileManager{
 
-	private static final DefaultListModel<ListRenderable> beatmapsModel = new DefaultListModel<ListRenderable>();
-	private static final DefaultListModel<ListRenderable> beatmapsUpdateModel = new DefaultListModel<ListRenderable>();
-	private static final DefaultListModel<ListRenderable> beatmapsStateModel = new DefaultListModel<ListRenderable>();
-
-
-	public static ListModel<ListRenderable> getBeatmaps(){
-		return beatmapsModel;
-	}
+	protected static final DefaultListModel<ListRenderable> beatmapsModel = new DefaultListModel<ListRenderable>();
+	protected static final DefaultListModel<ListRenderable> beatmapsUpdateModel = new DefaultListModel<ListRenderable>();
+	protected static final DefaultListModel<ListRenderable> beatmapsStateModel = new DefaultListModel<ListRenderable>();
 
 	protected static void init(){
 		addAll(beatmapsModel, parseB());
@@ -47,7 +42,20 @@ public class FileManager{
 			BeatmapItem local = new BeatmapItem(new File(VersionChecker.OSUDIR, "Songs" + File.separator + data.songfolder), data);
 			panels[i] = local;
 			VersionChecker.updateQueue.add(()->{
+				System.out.println("Execute state check");
 				local.setOnlineData(VersionChecker.checkState(data));
+				System.out.println("Online data fetched");
+				if(!(local.local.difficultyrating == local.online.difficultyrating && (local.local.total_length / 1000) == local.online.total_length &&
+				     local.local.diff_approach == local.online.diff_approach && local.local.diff_drain == local.online.diff_drain &&
+				     local.local.diff_overall == local.online.diff_overall && local.local.diff_size == local.online.diff_size)){
+					beatmapsUpdateModel.addElement(local);
+					VersionChecker.categories.setTitleAt(2, "Update available (" + beatmapsUpdateModel.size() + ")");
+				}
+				if(local.stateChanged()){
+					beatmapsStateModel.addElement(local);
+					VersionChecker.categories.setTitleAt(1, "State changed (" + beatmapsStateModel.size() + ")");
+				}
+				System.out.println("State check done");
 			});
 			i++;
 		}
@@ -107,12 +115,12 @@ public class FileManager{
 			g.setFont(finfo);
 			g.drawString("By " + local.creator, (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6, y + 12 + 14);
 			//status
-			String state = "Status: " + getStatus(local.status);
+			String state = "Status: " + getStatusLocal(local.status);
 			g.drawString(state, (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6, y + 12 + 14 + 15);
 			if(online != null){
-				if(local.status != online.status){
+				if(this.stateChanged()){
 					g.setColor(Color.RED);
-					g.drawString(" > " + getStatus(online.status), (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 1 + g.getFontMetrics().stringWidth(state), y + 12 + 14 + 15);
+					g.drawString(" > " + getStatusOnline(online.approved), (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 1 + g.getFontMetrics().stringWidth(state), y + 12 + 14 + 15);
 				}
 			}else{
 				g.setColor(Color.GRAY);
@@ -131,7 +139,7 @@ public class FileManager{
 			g.drawString(String.valueOf(local.diff_size),      (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 180 + offset, y + 12 + 14);
 			g.drawString(String.valueOf(local.diff_approach),  (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 180 + offset, y + 12 + 14 + 15);
 			g.drawString(String.valueOf(local.diff_drain),     (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 180 + offset + 100, y + 12 + 14);
-			g.drawString(String.valueOf(local.diff_overal),    (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 180 + offset + 100, y + 12 + 14 + 15);
+			g.drawString(String.valueOf(local.diff_overall),    (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 180 + offset + 100, y + 12 + 14 + 15);
 
 			if(online != null){
 				offset += g.getFontMetrics().stringWidth("10.0 ");
@@ -148,9 +156,9 @@ public class FileManager{
 					g.setColor(Color.RED);
 					g.drawString(">  " + online.diff_drain,     (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 180 + offset + 100, y + 12 + 14);
 				}
-				if(local.diff_overal != online.diff_overal){
+				if(local.diff_overall != online.diff_overall){
 					g.setColor(Color.RED);
-					g.drawString(">  " + online.diff_overal,    (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 180 + offset + 100, y + 12 + 14 + 15);
+					g.drawString(">  " + online.diff_overall,    (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 180 + offset + 100, y + 12 + 14 + 15);
 				}
 			}
 
@@ -166,15 +174,16 @@ public class FileManager{
 				    TimeUnit.MILLISECONDS.toMinutes(local.total_length) % TimeUnit.HOURS.toMinutes(1),
 				    TimeUnit.MILLISECONDS.toSeconds(local.total_length) % TimeUnit.MINUTES.toSeconds(1)),  (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 375 + loff, y + 12 + 14 + 15);
 			if(online != null){
-				if(local.difficultyrating != online.difficultyrating){
+				System.out.println("Local diff online diff: " + local.difficultyrating + " | " + online.difficultyrating);
+				if(starRatingChanged()){
 					g.setColor(Color.RED);
 					g.drawString("> " + String.format("%1$.2f",  online.difficultyrating),      (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 375 + soff + g.getFontMetrics().stringWidth("00.00 "), y + 12 + 14);
 				}
-				if(local.total_length != online.total_length){
+				if(lengthChanged()){
 					g.setColor(Color.RED);
 					g.drawString("> " + String.format("%02d:%02d",
-						    TimeUnit.MILLISECONDS.toMinutes(online.total_length) % TimeUnit.HOURS.toMinutes(1),
-						    TimeUnit.MILLISECONDS.toSeconds(online.total_length) % TimeUnit.MINUTES.toSeconds(1)),  (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 375 + loff + g.getFontMetrics().stringWidth("00:00 "), y + 12 + 14 + 15);
+						    TimeUnit.SECONDS.toMinutes(online.total_length) % TimeUnit.HOURS.toMinutes(1),
+						    TimeUnit.SECONDS.toSeconds(online.total_length) % TimeUnit.MINUTES.toSeconds(1)),  (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 375 + loff + g.getFontMetrics().stringWidth("00:00 "), y + 12 + 14 + 15);
 				
 				}
 			}
@@ -195,8 +204,36 @@ public class FileManager{
 		}
 
 		//0=unknow,4=ranked,5=approved,7=loved?,2=graveyard/pending,1=not submited>
-		private static String getStatus(int id){
+		private static String getStatusLocal(int id){
 			return id == 1 ? "Not submitted" : (id == 2 ? "Pending" : (id == 4 ? "Ranked" : (id == 5 ? "Approved" : (id == 7 ? "Loved" : "Unknow"))));
+		}
+		
+		//4=loved,3=qualified,2=approved,1=ranked,0=pending,-1= WIP,-2=graveyard
+		private static String getStatusOnline(int id){
+			return id == 4 ? "Loved" : (id == 3 ? "Qualified" : (id == 2 ? "Approved" : (id == 1 ? "Ranked" : (id == 0 ? "Pending" : (id == -1 ? "WIP" : (id == -2 ? "Graveyard" : "Unknow"))))));
+		}
+		
+		private boolean mapChanged(){
+			return true;
+		}
+		
+		private boolean lengthChanged(){
+			return local.total_length / 1000 != online.total_length;//local length in ms, online length in seconds 
+		}
+		
+		private boolean starRatingChanged(){
+			return (int)(local.difficultyrating * 10000.0D) != (int)(online.difficultyrating * 10000.0D);//factor in floating-point rounding errors
+		}
+		
+		private boolean stateChanged(){
+			if((local.status == 4 && online.approved == 1) ||
+					(local.status == 5 && online.approved == 2) ||
+					(local.status == 7 && online.approved == 4) ||
+					(local.status == 2 && online.approved >= 0)){
+				return false;
+			}else{
+				return true;
+			}
 		}
 
 		public void cancelPlayingState(){
