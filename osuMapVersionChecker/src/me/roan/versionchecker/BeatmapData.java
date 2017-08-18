@@ -17,6 +17,7 @@ public final class BeatmapData{
 	public String audiofile;
 	public int previeuw_time;
 	public int status;
+	public int threadID;
 	
 	//online only
 	public int approved;

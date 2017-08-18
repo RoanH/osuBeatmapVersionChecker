@@ -1,6 +1,7 @@
 package me.roan.versionchecker;
 
 import java.awt.Color;
+import java.awt.Desktop;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -9,6 +10,8 @@ import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -192,13 +195,16 @@ public class FileManager{
 			g.setColor(PINK);
 			g.fillRect(w - 80, y + 4, 76, 19);
 			g.fillRect(w - 80, y + 25, 76, 19);
-			g.fillRect(w - 80 - 76 - 4, y + 13, 76, 22);
+			g.fillRect(w - 80 - 76 - 4, y + 4, 76, 19);
+			g.fillRect(w - 80 - 76 - 4, y + 25, 76, 19);
 			g.setColor(PINK.darker());
 			g.drawRect(w - 80, y + 4, 76, 19);
 			g.drawRect(w - 80, y + 25, 76, 19);
-			g.drawRect(w - 80 - 76 - 4, y + 13, 76, 22);
+			g.drawRect(w - 80 - 76 - 4, y + 4, 76, 19);
+			g.drawRect(w - 80 - 76 - 4, y + 25, 76, 19);
 			g.setColor(Color.WHITE);
-			g.drawString("Beatmap page", (int) w - 80 - 76 - 4 + ((76 - g.getFontMetrics().stringWidth("Beatmap page")) / 2), y + 13 + 15);
+			g.drawString("Beatmap page", (int) w - 80 - 76 - 4 + ((76 - g.getFontMetrics().stringWidth("Beatmap page")) / 2), y + 17);
+			g.drawString("Forum post", (int) w - 80 - 76 - 4 + ((76 - g.getFontMetrics().stringWidth("Forum post")) / 2), y + 12 + 14 + 12);
 			g.drawString("Ingame link", (int) w - 80 + ((76 - g.getFontMetrics().stringWidth("Ingame link")) / 2), y + 17);
 			g.drawString("osu! direct", (int) w - 80 + ((76 - g.getFontMetrics().stringWidth("osu! direct")) / 2), y + 12 + 14 + 12);
 		}
@@ -241,20 +247,37 @@ public class FileManager{
 		}
 
 		public void onMouseEvent(MouseEvent e){
-			if(e.getX() > 4 && e.getX() < 4 + 71 && e.getY() > y + 4 && e.getY() < y + 4 + 40){
-				if(!playing){
-					PrevieuwPlayer.playFile(this);
-					playing = true;
-				}else{
-					PrevieuwPlayer.stop();
+			try {
+				if(e.getX() > 4 && e.getX() < 4 + 71 && e.getY() > y + 4 && e.getY() < y + 4 + 40){
+					if(!playing){
+						PrevieuwPlayer.playFile(this);
+						playing = true;
+					}else{
+						PrevieuwPlayer.stop();
+					}
+					e.getComponent().repaint();
+				}else if(e.getX() > w - 80 && e.getX() < w - 4 && e.getY() > y + 4 && e.getY() < y + 23){
+					System.out.println("A");//TODO ingame link
+				}else if(e.getX() > w - 80 && e.getX() < w - 4 && e.getY() > y + 25 && e.getY() < y + 44){
+					System.out.println("B");//TODO  osu! direct
+
+					Desktop.getDesktop().browse(new URI("osu://dl/" + local.setid));
+
+				}else if(e.getX() > w - 80 - 76 && e.getX() < w - 4 - 76 && e.getY() > y + 4 && e.getY() < y + 23){
+					System.out.println("C");//TODO beatmap
+					Desktop.getDesktop().browse(new URI("https://osu.ppy.sh/b/" + local.mapid));
+
+				}else if(e.getX() > w - 80 - 76 && e.getX() < w - 4 - 76 && e.getY() > y + 25 && e.getY() < y + 44){
+					System.out.println("D");//TODO  forum
+					Desktop.getDesktop().browse(new URI("https://osu.ppy.sh/forum/t/" + local.threadID));
+
 				}
-				e.getComponent().repaint();
-			}else if(e.getX() > w - 80 && e.getX() < w - 4 && e.getY() > y + 4 && e.getY() < y + 23){
-				System.out.println("A");//TODO ingame link
-			}else if(e.getX() > w - 80 && e.getX() < w - 4 && e.getY() > y + 25 && e.getY() < y + 44){
-				System.out.println("B");//TODO  osu! direct
-			}else if(e.getX() > w - 80 - 76 && e.getX() < w - 4 - 76 && e.getY() > y + 13 && e.getY() < y + 35){
-				System.out.println("C");//TODO beatmap page
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (URISyntaxException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
 		}
 

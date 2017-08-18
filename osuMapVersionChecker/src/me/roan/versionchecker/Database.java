@@ -102,7 +102,7 @@ public class Database {
 		in.skip(readInt(in) * 17);
 		data.mapid = readInt(in);
 		data.setid = readInt(in);
-		in.skip(4);//skip thread id XXX
+		data.threadID = readInt(in);
 		in.skip(10);
 		data.mode = in.read();
 		switch(data.mode){
