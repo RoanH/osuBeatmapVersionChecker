@@ -31,6 +31,9 @@ public class FileManager{
 				System.out.println("Execute state check");
 				local.setOnlineData(VersionChecker.checkState(data));
 				System.out.println("Online data fetched");
+				if(local.online == null){
+					return false;
+				}
 				if(local.mapChanged()){
 					beatmapsUpdateModel.addElement(local);
 					VersionChecker.categories.setTitleAt(2, "Update available (" + beatmapsUpdateModel.size() + ")");
@@ -40,6 +43,7 @@ public class FileManager{
 					VersionChecker.categories.setTitleAt(1, "State changed (" + beatmapsStateModel.size() + ")");
 				}
 				System.out.println("State check done");
+				return true;
 			});
 			i++;
 		}

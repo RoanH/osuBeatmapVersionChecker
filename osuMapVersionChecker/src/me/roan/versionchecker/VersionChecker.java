@@ -13,6 +13,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Queue;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -38,18 +39,26 @@ import me.roan.infinity.graphics.ui.RListUI.ListRenderable;
 
 public class VersionChecker {
 	
+	//https://osu.ppy.sh/osu/874599
+	
 	public static File OSUDIR = new File("C://Users//RoanH//Documents//osu!");
 	private static final Gson gson = new Gson();
-	protected static Queue<Runnable> updateQueue = new ConcurrentLinkedQueue<Runnable>();
+	protected static Queue<Callable<Boolean>> updateQueue = new ConcurrentLinkedQueue<Callable<Boolean>>();
 	private static final JList<ListRenderable> beatmaps = new JList<ListRenderable>(FileManager.beatmapsModel);
 	private static final JList<ListRenderable> beatmapsUpdate = new JList<ListRenderable>(FileManager.beatmapsUpdateModel);
 	private static final JList<ListRenderable> beatmapsState = new JList<ListRenderable>(FileManager.beatmapsStateModel);
 	protected static String APIKEY;
 	protected static JTabbedPane categories;
 	protected static final JFrame frame = new JFrame();
-
+	
+	private static boolean backup = true;
 	
 	public static void main(String[] args){
+		System.out.println(getPage("https://osu.ppy.sh/osu/874599"));
+	}
+
+	
+	public static void maint(String[] args){
 		APIKEY = args[0];
 		try {
 			Database.readDatabase();
@@ -62,8 +71,14 @@ public class VersionChecker {
 		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(()->{
 			try{
 				if(!updateQueue.isEmpty()){
-					updateQueue.poll().run();
-					beatmaps.repaint();
+					Callable<Boolean> task = updateQueue.poll();
+					if(!task.call()){
+						updateQueue.add(task);
+					}else{
+						beatmaps.repaint();
+					}
+				}else{
+					Thread.sleep(Long.MAX_VALUE);
 				}
 				System.out.println("Queue size: " + updateQueue.size());
 			}catch(Throwable t){
@@ -133,7 +148,13 @@ public class VersionChecker {
 		String req = getPage("https://osu.ppy.sh/api/get_beatmaps?k=" + APIKEY + "&h=" + local.hash);
 		System.out.println(req);
 		if(req == null){
-			return null;//TODO
+			return null;
+		}
+		if(req.equals("[]")){
+			System.out.println(local.title + " " + local.diff);
+			BeatmapData d = new BeatmapData();
+			d.generated = true;
+			return d;
 		}
 		BeatmapData data = null;
 		try{
@@ -141,8 +162,8 @@ public class VersionChecker {
 		}catch(Throwable t){
 			t.printStackTrace();
 		}
-		System.out.println("data: " + data);
-		System.out.println(local.status + " " + data.approved);
+		//System.out.println("data: " + data);
+		//System.out.println(local.status + " " + data.approved);
 		return data;
 	}
 	
@@ -196,4 +217,6 @@ public class VersionChecker {
 		public void mouseExited(MouseEvent e) {
 		}
 	}
+	
+	//private static final 
 }

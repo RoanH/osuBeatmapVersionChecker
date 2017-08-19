@@ -179,31 +179,38 @@ public final class BeatmapItem implements ListRenderable{
 	}
 	
 	protected boolean mapChanged(){
-		try {
-			Date d = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(online.last_update);
-			Date a = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(online.approved_date);
-			if(local.last_modification_time.before(d) && !local.last_modification_time.after(a)){
-				return true;
-			}else{
-				return false;
-			}
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return false;
-		}
+		return online.generated;
+//		try {
+//			Date d = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(online.last_update);
+//			if(online.approved_date != null){
+//				Date a = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(online.approved_date);
+//				//System.out.println(a);
+//				if(local.last_modification_time.after(a)){
+//					return false;
+//				}
+//			}
+//			if(local.last_modification_time.before(d)){
+//				return true;
+//			}else{
+//				return false;
+//			}
+//		} catch (ParseException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//			return false;
+//		}
 //		return local.diff_approach != online.diff_approach || local.diff_drain != online.diff_drain ||
 //			     local.diff_overall != online.diff_overall || local.diff_size != online.diff_size ||
 //			     lengthChanged() || starRatingChanged();
 	}
 	
 	private boolean lengthChanged(){
-		System.out.println("Len delta: " + Math.abs((local.total_length / 1000.0D) - online.total_length));
+		//System.out.println("Len delta: " + Math.abs((local.total_length / 1000.0D) - online.total_length));
 		return Math.abs((local.total_length / 1000.0D) - online.total_length) > 1;//local length in ms, online length in seconds 
 	}
 	
 	private boolean starRatingChanged(){
-		return (int)(local.difficultyrating * 1000.0D) != (int)(online.difficultyrating * 1000.0D);//factor in floating-point rounding errors
+		return Math.floor(local.difficultyrating * 1000.0D) != Math.floor(online.difficultyrating * 1000.0D);//factor in floating-point rounding errors
 	}
 	
 	protected boolean stateChanged(){

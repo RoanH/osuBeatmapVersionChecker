@@ -38,4 +38,5 @@ public final class BeatmapData{
 	String approved_date;
 	String last_update;
 	
+	boolean generated = false;
 }
