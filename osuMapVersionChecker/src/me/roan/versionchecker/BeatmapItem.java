@@ -181,7 +181,8 @@ public final class BeatmapItem implements ListRenderable{
 	protected boolean mapChanged(){
 		try {
 			Date d = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(online.last_update);
-			if(local.last_modification_time.before(d)){
+			Date a = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(online.approved_date);
+			if(local.last_modification_time.before(d) && !local.last_modification_time.after(a)){
 				return true;
 			}else{
 				return false;

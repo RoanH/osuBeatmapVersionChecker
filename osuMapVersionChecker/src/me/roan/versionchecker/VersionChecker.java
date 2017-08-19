@@ -17,12 +17,17 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -104,6 +109,18 @@ public class VersionChecker {
 				
 		content.add(categories, BorderLayout.CENTER);
 		
+		JPanel header = new JPanel(new BorderLayout());
+		header.setBorder(BorderFactory.createEtchedBorder());
+		JButton start = new JButton("Start");
+		JButton help = new JButton("Help");
+		JSpinner pollRate = new JSpinner(new SpinnerNumberModel(30, 1, 1400, 1));
+		JLabel time = new JLabel("Estimated time: ");
+		header.add(help, BorderLayout.LINE_END);
+		
+		
+		
+		content.add(header, BorderLayout.PAGE_START);
+		
 		frame.add(content);
 		frame.setMinimumSize(new Dimension(760, 400));
 		frame.setSize(new Dimension(Toolkit.getDefaultToolkit().getScreenSize().width / 2, Toolkit.getDefaultToolkit().getScreenSize().height / 2));
@@ -126,7 +143,6 @@ public class VersionChecker {
 		}
 		System.out.println("data: " + data);
 		System.out.println(local.status + " " + data.approved);
-		local.title = " online: " + data.last_update + " mod: " + local.last_modification_time;
 		return data;
 	}
 	

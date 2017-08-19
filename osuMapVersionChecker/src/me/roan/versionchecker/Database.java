@@ -32,7 +32,7 @@ public class Database {
 		int numberOfBeatmaps = readInt(in);
 		for(int i = 0 ; i < numberOfBeatmaps; i++){
 			BeatmapData data = readBeatmapEntry(in);
-			if(data.status != 4 && data.status != 5 && data.status != 1){//ignore: ranked, approved and unsubmitted
+			if(data.status != 4 && data.status != 5 && data.status != 1 && data.status != 7){//ignore: ranked, approved, unsubmitted and loved
 				maps.add(data);
 			}
 		}
