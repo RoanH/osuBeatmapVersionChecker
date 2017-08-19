@@ -30,7 +30,6 @@ import com.google.gson.Gson;
 
 import me.roan.infinity.graphics.ui.RListUI;
 import me.roan.infinity.graphics.ui.RListUI.ListRenderable;
-import me.roan.versionchecker.FileManager.BeatmapItem;
 
 public class VersionChecker {
 	
@@ -42,6 +41,7 @@ public class VersionChecker {
 	private static final JList<ListRenderable> beatmapsState = new JList<ListRenderable>(FileManager.beatmapsStateModel);
 	protected static String APIKEY;
 	protected static JTabbedPane categories;
+	protected static final JFrame frame = new JFrame();
 
 	
 	public static void main(String[] args){
@@ -55,12 +55,17 @@ public class VersionChecker {
 		FileManager.init();
 		createGUI();
 		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(()->{
-			if(!updateQueue.isEmpty()){
-				updateQueue.poll().run();
-				beatmaps.repaint();
+			try{
+				if(!updateQueue.isEmpty()){
+					updateQueue.poll().run();
+					beatmaps.repaint();
+				}
+				System.out.println("Queue size: " + updateQueue.size());
+			}catch(Throwable t){
+				System.out.println("Error");
+				t.printStackTrace();
 			}
-			System.out.println("Queue size: " + updateQueue.size());
-		}, 0, 10, TimeUnit.SECONDS);//TODO change
+		}, 0, 1, TimeUnit.SECONDS);//TODO change
 	}
 	
 	public static void createGUI(){
@@ -68,7 +73,7 @@ public class VersionChecker {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
 		}
-		JFrame frame = new JFrame();
+
 		JPanel content = new JPanel(new BorderLayout());
 		categories = new JTabbedPane();
 		
@@ -105,32 +110,9 @@ public class VersionChecker {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 	}
-
-	public static void mainl(String[] args){
-		String APIKEY = args[0];
-		try {
-			Database.readDatabase();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		FileManager.init();
-		for(BeatmapData data : Database.maps){
-			if(!(data.status == 4 || data.status == 5)){//0=unknow,4=ranked,5=approved,7=loved?,2=graveyard/pending,1=not submited>
-				System.out.println(data.status + " " + data.title + " " + data.diff);
-			}
-		}
-		//String hash = Database.maps.get(0).hash;
-		//String req = getPage("https://osu.ppy.sh/api/get_beatmaps?k=" + APIKEY + "&h=" + hash);
-
-		//System.out.println(req);
-		
-		//BeatmapData map = gson.fromJson(req.substring(1, req.length() - 1), BeatmapData.class);
-		
-		System.out.println(Database.maps.size());
-	}
 	
 	protected static BeatmapData checkState(BeatmapData local){
+		System.out.println("Start request");
 		String req = getPage("https://osu.ppy.sh/api/get_beatmaps?k=" + APIKEY + "&h=" + local.hash);
 		System.out.println(req);
 		if(req == null){
@@ -143,6 +125,8 @@ public class VersionChecker {
 			t.printStackTrace();
 		}
 		System.out.println("data: " + data);
+		System.out.println(local.status + " " + data.approved);
+		local.title = " online: " + data.last_update + " mod: " + local.last_modification_time;
 		return data;
 	}
 	
@@ -157,13 +141,14 @@ public class VersionChecker {
 		try{
 			HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
 			con.setRequestMethod("GET");
-			con.setConnectTimeout(10000);
+			con.setConnectTimeout(500);
 			
 		    BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
 		    String line = reader.readLine();
 		    reader.close();
 		    return line;
 		}catch(Exception e){
+			System.out.println("Page error");
 			return null;
 		}
 	}

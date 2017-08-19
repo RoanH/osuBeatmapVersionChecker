@@ -1,5 +1,7 @@
 package me.roan.versionchecker;
 
+import java.util.Date;
+
 public final class BeatmapData{
 	//shared
 	public String artist;
@@ -17,7 +19,7 @@ public final class BeatmapData{
 	public String audiofile;
 	public int previeuw_time;
 	public int status;
-	public int threadID;
+	public int thread;
 	
 	//online only
 	public int approved;
@@ -29,7 +31,7 @@ public final class BeatmapData{
 	public int mapid;
 	public int setid;
 	
-	
+	Date last_modification_time;
 	String version;
 	
 	int mode;

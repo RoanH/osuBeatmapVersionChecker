@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import me.roan.infinity.util.ByteUtils;
@@ -53,7 +54,7 @@ public class Database {
 		data.osufilename = readString(in);
 		data.status = in.read();
 		in.skip(6);
-		in.skip(8);//XXX last modification time - last update?
+		data.last_modification_time = readDate(in);
 		if(version < 20140609){
 			data.diff_approach = in.read();
 			data.diff_size = in.read();
@@ -102,7 +103,7 @@ public class Database {
 		in.skip(readInt(in) * 17);
 		data.mapid = readInt(in);
 		data.setid = readInt(in);
-		data.threadID = readInt(in);
+		data.thread = readInt(in);
 		in.skip(10);
 		data.mode = in.read();
 		switch(data.mode){
@@ -125,13 +126,11 @@ public class Database {
 		readString(in);
 		in.skip(10);
 		data.songfolder = readString(in);
-		in.skip(8);//XXX last repository check? - last update?
-		in.skip(5);
+		in.skip(13);
 		if(version < 20140609){
 			in.skip(2);
 		}
-		in.skip(4);//XXX last modification time
-		in.skip(1);
+		in.skip(5);
 		return data;
 	}
 	
@@ -187,5 +186,19 @@ public class Database {
 			count++;
 		} while (((cur & 0x80) == 0x80) && count < 5);
 		return result;
+	}
+	
+	public static long readLong(InputStream in) throws IOException {
+		byte[] bytes = new byte[8];
+		in.read(bytes);
+		ByteBuffer bb = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN);
+		return bb.getLong();
+	}
+	
+	public static Date readDate(InputStream in) throws IOException {
+		long ticks = readLong(in);
+		final long TICKS_AT_EPOCH = 621355968000000000L;
+		final long TICKS_PER_MILLISECOND = 10000;
+		return new Date((ticks - TICKS_AT_EPOCH) / TICKS_PER_MILLISECOND);
 	}
 }
