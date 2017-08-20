@@ -13,9 +13,6 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -24,6 +21,8 @@ import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
 import me.roan.infinity.graphics.ui.RListUI.ListRenderable;
+import me.roan.versionchecker.BeatmapData.LocalBeatmapData;
+import me.roan.versionchecker.BeatmapData.OnlineBeatmapData;
 
 public final class BeatmapItem implements ListRenderable{
 	public final File file;
@@ -32,13 +31,21 @@ public final class BeatmapItem implements ListRenderable{
 	protected static final Font finfob = new Font("Dialog", Font.BOLD, 11);
 	public static final Color PINK = new Color(255, 102, 204);
 	public static final Color SELECTION_COLOR = new Color(0.0F, 1.0F, 1.0F, 0.3F);
+	public static final Color DL_TRUE = new Color(0.0F, 1.0F, 0.0F, 0.15F);
+	public static final Color DL_FALSE = new Color(1.0F, 0.0F, 0.0F, 0.15F);
+	public static final Color DL_TRUE_2X = new Color(0.0F, 1.0F, 0.0F, 0.3F);
+	public static final Color DL_FALSE_2X = new Color(1.0F, 0.0F, 0.0F, 0.3F);
+	public static final Color DL_TRUE_4X = new Color(0.0F, 1.0F, 0.0F, 0.6F);
+	public static final Color DL_FALSE_4X = new Color(1.0F, 0.0F, 0.0F, 0.6F);
 	private Image icon;
-	public final BeatmapData local;
-	public BeatmapData online;
+	public final LocalBeatmapData local;
+	public OnlineBeatmapData online;
 	private static final ExecutorService imageLoader = Executors.newSingleThreadExecutor();
 	private int y;
 	private int w;
 	private boolean playing = false;
+	private Boolean download = null;
+	private boolean showControls = false;
 
 	@Override
 	public void paint(Graphics g1, int x, int y, int w, int h, boolean selected) {
@@ -49,6 +56,15 @@ public final class BeatmapItem implements ListRenderable{
 		this.w = w;
 		g.setColor(Color.LIGHT_GRAY.brighter());
 		g.fillRect(x, y, x + w, y + h);
+		if(download != null){
+			if(download){
+				g.setColor(selected ? DL_TRUE_2X : DL_TRUE);
+				g.fillRect(x, y, x + w, y + h);
+			}else{
+				g.setColor(selected ? DL_FALSE_2X : DL_FALSE);
+				g.fillRect(x, y, x + w, y + h);
+			}
+		}
 		if(selected){
 			g.setColor(SELECTION_COLOR);
 			g.fillRect(x, y, x + w, y + h);
@@ -90,67 +106,20 @@ public final class BeatmapItem implements ListRenderable{
 			g.drawString(" > Loading", (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 1 + g.getFontMetrics().stringWidth(state), y + 12 + 14 + 15);
 		}
 		//attributes
-		g.setColor(Color.BLACK);
-		g.setFont(finfob);
-		int offset = g.getFontMetrics().stringWidth("CS: ");
-		g.drawString("CS: ", (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 180, y + 12 + 14);
-		g.drawString("AR: ", (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 180, y + 12 + 14 + 15);
-		g.drawString("HP: ", (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 180 + 100, y + 12 + 14);
-		g.drawString("OD: ", (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 180 + 100, y + 12 + 14 + 15);
-
-		g.setFont(finfo);
-		g.drawString(String.valueOf(local.diff_size),      (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 180 + offset, y + 12 + 14);
-		g.drawString(String.valueOf(local.diff_approach),  (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 180 + offset, y + 12 + 14 + 15);
-		g.drawString(String.valueOf(local.diff_drain),     (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 180 + offset + 100, y + 12 + 14);
-		g.drawString(String.valueOf(local.diff_overall),    (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 180 + offset + 100, y + 12 + 14 + 15);
-
-		if(online != null){
-			offset += g.getFontMetrics().stringWidth("10.0 ");
-			g.setFont(finfo);
-			if(local.diff_size != online.diff_size){
-				g.setColor(Color.RED);
-				g.drawString(">  " + online.diff_size,      (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 180 + offset, y + 12 + 14);
-			}
-			if(local.diff_approach != online.diff_approach){
-				g.setColor(Color.RED);
-				g.drawString(">  " + online.diff_approach,  (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 180 + offset, y + 12 + 14 + 15);
-			}
-			if(local.diff_drain != online.diff_drain){
-				g.setColor(Color.RED);
-				g.drawString(">  " + online.diff_drain,     (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 180 + offset + 100, y + 12 + 14);
-			}
-			if(local.diff_overall != online.diff_overall){
-				g.setColor(Color.RED);
-				g.drawString(">  " + online.diff_overall,    (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 180 + offset + 100, y + 12 + 14 + 15);
-			}
-		}
-
 		g.setFont(finfob);
 		g.setColor(Color.BLACK);
-		g.drawString("Stars: ", (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 375, y + 12 + 14);
-		g.drawString("Length: ", (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 375, y + 12 + 14 + 15);
+		g.drawString("Stars: ", (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 140, y + 12 + 14);
+		g.drawString("Length: ", (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 140, y + 12 + 14 + 15);
 		int soff = g.getFontMetrics().stringWidth("Stars: ");
 		int loff = g.getFontMetrics().stringWidth("Length: ");
 		g.setFont(finfo);
-		g.drawString(String.format("%1$.2f",  local.difficultyrating), (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 375 + soff, y + 12 + 14);
+		g.drawString(String.format("%1$.2f",  local.difficultyrating), (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 140 + soff, y + 12 + 14);
 		g.drawString(String.format("%02d:%02d",
 			    TimeUnit.MILLISECONDS.toMinutes(local.total_length) % TimeUnit.HOURS.toMinutes(1),
-			    TimeUnit.MILLISECONDS.toSeconds(local.total_length) % TimeUnit.MINUTES.toSeconds(1)),  (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 375 + loff, y + 12 + 14 + 15);
-		if(online != null){
-			System.out.println("Local diff online diff: " + local.difficultyrating + " | " + online.difficultyrating);
-			if(starRatingChanged()){
-				g.setColor(Color.RED);
-				g.drawString("> " + String.format("%1$.2f",  online.difficultyrating),      (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 375 + soff + g.getFontMetrics().stringWidth("00.00 "), y + 12 + 14);
-			}
-			if(lengthChanged()){
-				g.setColor(Color.RED);
-				g.drawString("> " + String.format("%02d:%02d",
-					    TimeUnit.SECONDS.toMinutes(online.total_length) % TimeUnit.HOURS.toMinutes(1),
-					    TimeUnit.SECONDS.toSeconds(online.total_length) % TimeUnit.MINUTES.toSeconds(1)),  (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 375 + loff + g.getFontMetrics().stringWidth("00:00 "), y + 12 + 14 + 15);
-			}
-		}
+			    TimeUnit.MILLISECONDS.toSeconds(local.total_length) % TimeUnit.MINUTES.toSeconds(1)),  (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 140 + loff, y + 12 + 14 + 15);
 		
 		//3 * 16 = 48 | 40 - 38:n 36:y12
+		g.setFont(finfob);
 		g.setColor(PINK);
 		g.fillRect(w - 80, y + 4, 76, 19);
 		g.fillRect(w - 80, y + 25, 76, 19);
@@ -162,10 +131,29 @@ public final class BeatmapItem implements ListRenderable{
 		g.drawRect(w - 80 - 76 - 4, y + 4, 76, 19);
 		g.drawRect(w - 80 - 76 - 4, y + 25, 76, 19);
 		g.setColor(Color.WHITE);
-		g.drawString("Beatmap page", (int) w - 80 - 76 - 4 + ((76 - g.getFontMetrics().stringWidth("Beatmap page")) / 2), y + 17);
+		g.drawString("Listing", (int) w - 80 - 76 - 4 + ((76 - g.getFontMetrics().stringWidth("Listing")) / 2), y + 17);
 		g.drawString("Forum post", (int) w - 80 - 76 - 4 + ((76 - g.getFontMetrics().stringWidth("Forum post")) / 2), y + 12 + 14 + 12);
 		g.drawString("Copy title", (int) w - 80 + ((76 - g.getFontMetrics().stringWidth("Copy title")) / 2), y + 17);
 		g.drawString("osu! direct", (int) w - 80 + ((76 - g.getFontMetrics().stringWidth("osu! direct")) / 2), y + 12 + 14 + 12);
+		
+		//controls
+		if(showControls){
+			g.setColor(Color.WHITE);
+			g.fillRect(w - 80 - 76 - 76 - 8, y + 4, 76, 19);
+			g.fillRect(w - 80 - 76 - 76 - 8, y + 25, 76, 19);
+			g.setColor(DL_TRUE_2X);
+			g.fillRect(w - 80 - 76 - 76 - 8, y + 4, 76, 19);
+			g.setColor(Color.GREEN);
+			g.drawRect(w - 80 - 76 - 76 - 8, y + 4, 76, 19);
+			g.setColor(DL_FALSE_2X);
+			g.fillRect(w - 80 - 76 - 76 - 8, y + 25, 76, 19);
+			g.setColor(Color.RED);
+			g.drawRect(w - 80 - 76 - 76 - 8, y + 25, 76, 19);
+			g.setColor(Color.BLACK);
+			g.drawString("Update", (int) w - 80 - 78 - 76 - 4 + ((76 - g.getFontMetrics().stringWidth("Update")) / 2), y + 17);
+			g.drawString("Don't update", (int) w - 78 - 80 - 76 - 4 + ((76 - g.getFontMetrics().stringWidth("Don't update")) / 2), y + 12 + 14 + 12);
+			
+		}
 	}
 
 	//0=unknow,4=ranked,5=approved,7=loved?,2=graveyard/pending,1=not submited>
@@ -180,37 +168,6 @@ public final class BeatmapItem implements ListRenderable{
 	
 	protected boolean mapChanged(){
 		return online.generated;
-//		try {
-//			Date d = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(online.last_update);
-//			if(online.approved_date != null){
-//				Date a = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(online.approved_date);
-//				//System.out.println(a);
-//				if(local.last_modification_time.after(a)){
-//					return false;
-//				}
-//			}
-//			if(local.last_modification_time.before(d)){
-//				return true;
-//			}else{
-//				return false;
-//			}
-//		} catch (ParseException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//			return false;
-//		}
-//		return local.diff_approach != online.diff_approach || local.diff_drain != online.diff_drain ||
-//			     local.diff_overall != online.diff_overall || local.diff_size != online.diff_size ||
-//			     lengthChanged() || starRatingChanged();
-	}
-	
-	private boolean lengthChanged(){
-		//System.out.println("Len delta: " + Math.abs((local.total_length / 1000.0D) - online.total_length));
-		return Math.abs((local.total_length / 1000.0D) - online.total_length) > 1;//local length in ms, online length in seconds 
-	}
-	
-	private boolean starRatingChanged(){
-		return Math.floor(local.difficultyrating * 1000.0D) != Math.floor(online.difficultyrating * 1000.0D);//factor in floating-point rounding errors
 	}
 	
 	protected boolean stateChanged(){
@@ -247,17 +204,24 @@ public final class BeatmapItem implements ListRenderable{
 				Desktop.getDesktop().browse(new URI("https://osu.ppy.sh/b/" + local.mapid));
 			}else if(e.getX() > w - 80 - 76 && e.getX() < w - 4 - 76 && e.getY() > y + 25 && e.getY() < y + 44){
 				Desktop.getDesktop().browse(new URI("https://osu.ppy.sh/forum/t/" + local.thread));
+			}else if(showControls && e.getX() > w - 80 - 80 - 76 && e.getX() < w - 4 - 80 - 76 && e.getY() > y + 4 && e.getY() < y + 23){
+				download = true;
+				e.getComponent().repaint();
+			}else if(showControls && e.getX() > w - 80 - 80 - 76 && e.getX() < w - 4 - 80 - 76 && e.getY() > y + 25 && e.getY() < y + 44){
+				download = false;
+				e.getComponent().repaint();
 			}
 		} catch (Throwable e1) {
 			JOptionPane.showMessageDialog(VersionChecker.frame, "An exception occurred", "Version Checker", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
-	public void setOnlineData(BeatmapData data){
+	public void setOnlineData(OnlineBeatmapData data){
 		this.online = data;
+		showControls = data.generated;
 	}
 
-	protected BeatmapItem(File file, BeatmapData data){
+	protected BeatmapItem(File file, LocalBeatmapData data){
 		this.file = file;
 		imageLoader.submit(()->{
 			try {

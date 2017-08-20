@@ -4,6 +4,7 @@ import java.io.File;
 import javax.swing.DefaultListModel;
 
 import me.roan.infinity.graphics.ui.RListUI.ListRenderable;
+import me.roan.versionchecker.BeatmapData.LocalBeatmapData;
 
 public class FileManager{
 
@@ -24,7 +25,7 @@ public class FileManager{
 	private static BeatmapItem[] parseB(){
 		BeatmapItem[] panels = new BeatmapItem[Database.maps.size()];
 		int i = 0;
-		for(BeatmapData data : Database.maps){
+		for(LocalBeatmapData data : Database.maps){
 			BeatmapItem local = new BeatmapItem(new File(VersionChecker.OSUDIR, "Songs" + File.separator + data.songfolder), data);
 			panels[i] = local;
 			VersionChecker.updateQueue.add(()->{

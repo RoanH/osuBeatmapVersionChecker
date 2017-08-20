@@ -36,6 +36,8 @@ import com.google.gson.Gson;
 
 import me.roan.infinity.graphics.ui.RListUI;
 import me.roan.infinity.graphics.ui.RListUI.ListRenderable;
+import me.roan.versionchecker.BeatmapData.LocalBeatmapData;
+import me.roan.versionchecker.BeatmapData.OnlineBeatmapData;
 
 public class VersionChecker {
 	
@@ -53,12 +55,12 @@ public class VersionChecker {
 	
 	private static boolean backup = true;
 	
-	public static void main(String[] args){
+	public static void maint(String[] args){
 		System.out.println(getPage("https://osu.ppy.sh/osu/874599"));
 	}
 
 	
-	public static void maint(String[] args){
+	public static void main(String[] args){
 		APIKEY = args[0];
 		try {
 			Database.readDatabase();
@@ -143,7 +145,7 @@ public class VersionChecker {
 		frame.setVisible(true);
 	}
 	
-	protected static BeatmapData checkState(BeatmapData local){
+	protected static OnlineBeatmapData checkState(LocalBeatmapData local){
 		System.out.println("Start request");
 		String req = getPage("https://osu.ppy.sh/api/get_beatmaps?k=" + APIKEY + "&h=" + local.hash);
 		System.out.println(req);
@@ -152,13 +154,13 @@ public class VersionChecker {
 		}
 		if(req.equals("[]")){
 			System.out.println(local.title + " " + local.diff);
-			BeatmapData d = new BeatmapData();
+			OnlineBeatmapData d = new OnlineBeatmapData();
 			d.generated = true;
 			return d;
 		}
-		BeatmapData data = null;
+		OnlineBeatmapData data = null;
 		try{
-			data = gson.fromJson(req.substring(1, req.length() - 1), BeatmapData.class);
+			data = gson.fromJson(req.substring(1, req.length() - 1), OnlineBeatmapData.class);
 		}catch(Throwable t){
 			t.printStackTrace();
 		}
@@ -218,5 +220,7 @@ public class VersionChecker {
 		}
 	}
 	
-	//private static final 
+	private static final void updateBeatmap(BeatmapData local){
+		
+	}
 }

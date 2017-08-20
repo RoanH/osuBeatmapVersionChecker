@@ -7,18 +7,18 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import me.roan.infinity.util.ByteUtils;
 import me.roan.infinity.util.encryption.Encryption;
+import me.roan.versionchecker.BeatmapData.LocalBeatmapData;
 
 public class Database {
 	
 	//https://github.com/ppy/osu-wiki/blob/master/wiki/osu!_File_Formats/Db_(file_format)/en.md
 	
 	private static int version;//osu! version, not that anyone still uses an old version
-	public static final List<BeatmapData> maps = new ArrayList<BeatmapData>();
+	public static final List<LocalBeatmapData> maps = new ArrayList<LocalBeatmapData>();
 	public static final int GM_STANDARD= 0;
 	public static final int GM_CTB= 2;
 	public static final int GM_MANIA= 3;
@@ -31,9 +31,8 @@ public class Database {
 		readString(in);
 		int numberOfBeatmaps = readInt(in);
 		for(int i = 0 ; i < numberOfBeatmaps; i++){
-			BeatmapData data = readBeatmapEntry(in);
-			if(data.status != 4 && data.status != 5 && data.status != 1 && data.status != 7//ignore: ranked, approved, unsubmitted and loved
-			   && !(data.creator.equals("") && data.title.equals("") && data.diff.equals(""))){//ignore: empty entries
+			LocalBeatmapData data = readBeatmapEntry(in);
+			if(data.status != 4 && data.status != 5 && data.status != 1 && data.status != 7){//ignore: ranked, approved, unsubmitted and loved
 				maps.add(data);
 			}
 		}
@@ -41,8 +40,8 @@ public class Database {
 		in.close();
 	}
 	
-	private static final BeatmapData readBeatmapEntry(InputStream in) throws IOException{
-		BeatmapData data = new BeatmapData();
+	private static final LocalBeatmapData readBeatmapEntry(InputStream in) throws IOException{
+		LocalBeatmapData data = new LocalBeatmapData();
 		in.skip(4);
 		data.artist = readString(in);
 		readString(in);
@@ -54,18 +53,11 @@ public class Database {
 		data.hash = readString(in);
 		data.osufilename = readString(in);
 		data.status = in.read();
-		in.skip(6);
-		data.last_modification_time = readDate(in);
+		in.skip(14);
 		if(version < 20140609){
-			data.diff_approach = in.read();
-			data.diff_size = in.read();
-			data.diff_drain = in.read();
-			data.diff_overall = in.read();
+			in.skip(4);
 		}else{
-			data.diff_approach = readFloat(in);
-			data.diff_size = readFloat(in);
-			data.diff_drain = readFloat(in);
-			data.diff_overall = readFloat(in);
+			in.skip(16);
 		}
 		in.skip(8);
 		double std_rating = 0.0D;
@@ -187,19 +179,5 @@ public class Database {
 			count++;
 		} while (((cur & 0x80) == 0x80) && count < 5);
 		return result;
-	}
-	
-	public static long readLong(InputStream in) throws IOException {
-		byte[] bytes = new byte[8];
-		in.read(bytes);
-		ByteBuffer bb = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN);
-		return bb.getLong();
-	}
-	
-	public static Date readDate(InputStream in) throws IOException {
-		long ticks = readLong(in);
-		final long TICKS_AT_EPOCH = 621355968000000000L;
-		final long TICKS_PER_MILLISECOND = 10000;
-		return new Date((ticks - TICKS_AT_EPOCH) / TICKS_PER_MILLISECOND);
 	}
 }
