@@ -25,9 +25,19 @@ public class BeatmapData{
 	
 	public static final class OnlineBeatmapData extends BeatmapData{
 		//online only
+		/**
+		 * Ranked status of the map
+		 */
 		public int approved;
 		
 		//special
+		/**
+		 * Whether or not this is a place holder
+		 * data object. This indicates that the
+		 * online map data could not be fetched
+		 * because the result was empty meaning
+		 * that an update is available.
+		 */
 		boolean generated = false;
 	}
 }

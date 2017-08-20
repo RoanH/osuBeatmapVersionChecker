@@ -146,14 +146,11 @@ public class VersionChecker {
 	}
 	
 	protected static OnlineBeatmapData checkState(LocalBeatmapData local){
-		System.out.println("Start request");
 		String req = getPage("https://osu.ppy.sh/api/get_beatmaps?k=" + APIKEY + "&h=" + local.hash);
-		System.out.println(req);
 		if(req == null){
-			return null;
+			return null;//returning null will trigger a retry later on
 		}
-		if(req.equals("[]")){
-			System.out.println(local.title + " " + local.diff);
+		if(req.equals("[]")){//no data means an update
 			OnlineBeatmapData d = new OnlineBeatmapData();
 			d.generated = true;
 			return d;
@@ -220,7 +217,7 @@ public class VersionChecker {
 		}
 	}
 	
-	private static final void updateBeatmap(BeatmapData local){
+	private static final void updateBeatmap(LocalBeatmapData local){
 		
 	}
 }
