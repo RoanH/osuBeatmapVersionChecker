@@ -8,6 +8,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -36,6 +39,7 @@ import com.google.gson.Gson;
 
 import me.roan.infinity.graphics.ui.RListUI;
 import me.roan.infinity.graphics.ui.RListUI.ListRenderable;
+import me.roan.infinity.util.Util;
 import me.roan.versionchecker.BeatmapData.LocalBeatmapData;
 import me.roan.versionchecker.BeatmapData.OnlineBeatmapData;
 
@@ -217,7 +221,16 @@ public class VersionChecker {
 		}
 	}
 	
-	private static final void updateBeatmap(LocalBeatmapData local){
-		
+	private static final void updateBeatmap(BeatmapItem item) throws IOException{
+		if(backup){
+			File dest = new File("backup" + File.separator + item.local.osufilename);
+			dest.createNewFile();
+			FileOutputStream out = new FileOutputStream(dest);
+			FileInputStream in = new FileInputStream(new File(OSUDIR, "Songs" + File.separator + item.file + File.separator + item.local.osufilename));
+			Util.copyAllData(in, out);
+			in.close();
+			out.flush();
+			out.close();
+		}
 	}
 }
