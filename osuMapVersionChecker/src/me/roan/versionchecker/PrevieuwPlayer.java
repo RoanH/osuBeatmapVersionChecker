@@ -2,33 +2,39 @@ package me.roan.versionchecker;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.advanced.AdvancedPlayer;
 
+/**
+ * Simple class to play beatmap song previews
+ * @author RoanH
+ */
 public class PrevieuwPlayer {
-	
+	/**
+	 * Audio player
+	 */
 	private static AdvancedPlayer player;
+	/**
+	 * Audio executor
+	 */
 	private static final ExecutorService executor = Executors.newSingleThreadExecutor();
 	
+	/**
+	 * Plays the preview
+	 * for the given beatmap
+	 * @param data The beatmap to play
+	 */
 	public static void playFile(BeatmapItem data){
-		if(player != null){
-			player.close();
-		}
+		stop();
 		executor.submit(()->{
 			try {				
 				player = new AdvancedPlayer(new FileInputStream(new File(data.file, data.local.audiofile)));
 				player.setLineGain(-20F);
 				player.playSection(data.local.previeuw_time, 30000);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (JavaLayerException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			} catch (Throwable t) {
+				//Not a crucial operation
 			}
 			data.cancelPlayingState();
 		});
@@ -38,6 +44,10 @@ public class PrevieuwPlayer {
 		}
 	}
 	
+	/**
+	 * Stops the song currently
+	 * being played
+	 */
 	public static void stop(){
 		if(player != null){
 			player.close();
