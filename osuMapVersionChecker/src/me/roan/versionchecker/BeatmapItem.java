@@ -45,7 +45,7 @@ public final class BeatmapItem implements ListRenderable{
 	private int w;
 	private boolean playing = false;
 	private Boolean download = null;
-	private boolean showControls = false;
+	private boolean showControls = true;
 
 	@Override
 	public void paint(Graphics g1, int x, int y, int w, int h, boolean selected) {

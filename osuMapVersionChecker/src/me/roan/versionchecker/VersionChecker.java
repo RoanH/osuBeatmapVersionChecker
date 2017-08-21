@@ -3,6 +3,7 @@ package me.roan.versionchecker;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -87,7 +88,7 @@ public class VersionChecker {
 				System.out.println("Error");
 				t.printStackTrace();
 			}
-		}, 0, 1, TimeUnit.SECONDS);//TODO change
+		}, 0, 1, TimeUnit.HOURS);//TODO change
 	}
 	
 	public static void createGUI(){
@@ -124,24 +125,58 @@ public class VersionChecker {
 		categories.addTab("State changed (0)", new JScrollPane(beatmapsState));
 		categories.addTab("Update available (0)", new JScrollPane(beatmapsUpdate));
 				
+		categories.setBorder(BorderFactory.createTitledBorder("Listing"));
 		content.add(categories, BorderLayout.CENTER);
 		
 		JPanel header = new JPanel(new BorderLayout());
-		header.setBorder(BorderFactory.createEtchedBorder());
+		JPanel checking = new JPanel(new GridLayout(3, 1));
 		JButton start = new JButton("Start");
-		JButton help = new JButton("Help");
-		JSpinner pollRate = new JSpinner(new SpinnerNumberModel(30, 1, 1400, 1));
+		JLabel l_rate = new JLabel("API poll rate: ");
+		JSpinner s_rate = new JSpinner(new SpinnerNumberModel(30, 1, 1400, 1));
+		JLabel l_rate_2 = new JLabel(" requests/minute");
+		JPanel rate = new JPanel(new BorderLayout());
+		rate.add(l_rate, BorderLayout.LINE_START);
+		rate.add(s_rate, BorderLayout.CENTER);
+		rate.add(l_rate_2, BorderLayout.LINE_END);
+		checking.setPreferredSize(new Dimension(220, 0));
 		JLabel time = new JLabel("Estimated time: ");
-		header.add(help, BorderLayout.LINE_END);
+		checking.add(rate);
+		checking.add(start);
+		checking.add(time);
+		header.add(checking, BorderLayout.LINE_START);
 		
+		JButton sel_all = new JButton("Set all maps to 'update'");
+		JButton sel_unmarked = new JButton("Set all unmarked maps to 'update'");
+		JButton desel_unmarked = new JButton("Set all unmarked maps to 'don't update'");
+		JPanel modes = new JPanel(new GridLayout(3, 1));
+		modes.add(sel_all);
+		modes.add(sel_unmarked);
+		modes.add(desel_unmarked);
 		
+		JButton update = new JButton("Update all selected maps");
+		
+		JPanel update_panel = new JPanel(new BorderLayout());
+		update_panel.add(modes, BorderLayout.CENTER);
+		update_panel.add(update, BorderLayout.LINE_END);
+		
+		JPanel help_panel = new JPanel(new BorderLayout());
+		JButton help = new JButton("Help");
+		help_panel.add(help, BorderLayout.CENTER);
+		header.add(help_panel, BorderLayout.LINE_END);
+		
+		checking.setBorder(BorderFactory.createTitledBorder("Checking"));
+		update_panel.setBorder(BorderFactory.createTitledBorder("Updating"));
+		help_panel.setBorder(BorderFactory.createTitledBorder("Info"));
+		
+		header.add(update_panel, BorderLayout.CENTER);
 		
 		content.add(header, BorderLayout.PAGE_START);
+		content.setBorder(BorderFactory.createEtchedBorder());
 		
 		frame.add(content);
-		frame.setMinimumSize(new Dimension(760, 400));
+		frame.setMinimumSize(new Dimension(800, 400));
 		frame.setLocationRelativeTo(null);
-		frame.setSize(new Dimension(Toolkit.getDefaultToolkit().getScreenSize().width / 2, Toolkit.getDefaultToolkit().getScreenSize().height / 2));
+		frame.setSize(new Dimension(800, Toolkit.getDefaultToolkit().getScreenSize().height / 2));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 	}

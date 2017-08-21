@@ -21,7 +21,7 @@ public class FileManager{
 			model.addElement(p);
 		}
 	}
-
+	
 	private static BeatmapItem[] parseB(){
 		BeatmapItem[] panels = new BeatmapItem[Database.maps.size()];
 		int i = 0;
