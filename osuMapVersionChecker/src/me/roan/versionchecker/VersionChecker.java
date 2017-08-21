@@ -75,6 +75,9 @@ public class VersionChecker {
 		}
 		FileManager.init();
 		createGUI();
+	}
+	
+	public static final void start(){
 		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(()->{
 			try{
 				if(!updateQueue.isEmpty()){
@@ -92,7 +95,7 @@ public class VersionChecker {
 				System.out.println("Error");
 				t.printStackTrace();
 			}
-		}, 0, 1, TimeUnit.HOURS);//TODO change
+		}, 0, TimeUnit.MINUTES.toNanos(1) / pollRate, TimeUnit.NANOSECONDS);
 	}
 	
 	public static void createGUI(){
