@@ -44,7 +44,7 @@ public final class BeatmapItem implements ListRenderable{
 	private int y;
 	private int w;
 	private boolean playing = false;
-	private Boolean download = null;
+	protected Boolean download = null;
 	private boolean showControls = true;
 
 	@Override

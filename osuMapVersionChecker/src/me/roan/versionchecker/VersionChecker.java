@@ -30,6 +30,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
@@ -38,6 +39,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import com.google.gson.Gson;
 
@@ -52,12 +55,13 @@ public class VersionChecker {
 	public static File OSUDIR = new File("C://Users//RoanH//Documents//osu!");
 	private static final Gson gson = new Gson();
 	protected static Queue<Callable<Boolean>> updateQueue = new ConcurrentLinkedQueue<Callable<Boolean>>();
-	private static final JList<ListRenderable> beatmaps = new JList<ListRenderable>(FileManager.beatmapsModel);
-	private static final JList<ListRenderable> beatmapsUpdate = new JList<ListRenderable>(FileManager.beatmapsUpdateModel);
-	private static final JList<ListRenderable> beatmapsState = new JList<ListRenderable>(FileManager.beatmapsStateModel);
+	private static final JList<BeatmapItem> beatmaps = new JList<BeatmapItem>(FileManager.beatmapsModel);
+	private static final JList<BeatmapItem> beatmapsUpdate = new JList<BeatmapItem>(FileManager.beatmapsUpdateModel);
+	private static final JList<BeatmapItem> beatmapsState = new JList<BeatmapItem>(FileManager.beatmapsStateModel);
 	protected static String APIKEY;
 	protected static JTabbedPane categories;
 	protected static final JFrame frame = new JFrame();
+	private static int pollRate = 30;
 	
 	private static boolean backup = true;
 	
@@ -132,14 +136,37 @@ public class VersionChecker {
 		JPanel checking = new JPanel(new GridLayout(3, 1));
 		JButton start = new JButton("Start");
 		JLabel l_rate = new JLabel("API poll rate: ");
-		JSpinner s_rate = new JSpinner(new SpinnerNumberModel(30, 1, 1400, 1));
+		JSpinner s_rate = new JSpinner(new SpinnerNumberModel(pollRate, 1, 1400, 1));
 		JLabel l_rate_2 = new JLabel(" requests/minute");
 		JPanel rate = new JPanel(new BorderLayout());
 		rate.add(l_rate, BorderLayout.LINE_START);
 		rate.add(s_rate, BorderLayout.CENTER);
 		rate.add(l_rate_2, BorderLayout.LINE_END);
 		checking.setPreferredSize(new Dimension(220, 0));
-		JLabel time = new JLabel("Estimated time: ");
+		JLabel time = new JLabel(String.format("Estimated time: %1$.1f minutes", ((double)updateQueue.size() / (double)pollRate)));
+		s_rate.addChangeListener(new ChangeListener(){
+			
+			private int prev = pollRate;
+
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				int newValue = (int) s_rate.getValue();
+				if(newValue > 60 && prev <= 60){
+					if(JOptionPane.OK_OPTION != JOptionPane.showConfirmDialog(frame, "It's advised to inform peppy when using a roll rate over 60.", "Version Checker", JOptionPane.WARNING_MESSAGE)){
+						s_rate.setValue((int)s_rate.getValue() - 1);
+						return;
+					}
+				}else if(newValue > 1200 && prev <= 1200){
+					if(JOptionPane.OK_OPTION != JOptionPane.showConfirmDialog(frame, "By going over 1200 you enter the burst capability zone of the API it's advised not to do this.", "Version Checker", JOptionPane.WARNING_MESSAGE)){
+						s_rate.setValue((int)s_rate.getValue() - 1);
+						return;
+					}
+				}
+				time.setText(String.format("Estimated time: %1$.1f minutes", ((double)updateQueue.size() / (double)newValue)));
+				prev = newValue;
+				pollRate = newValue;
+			}
+		});
 		checking.add(rate);
 		checking.add(start);
 		checking.add(time);
