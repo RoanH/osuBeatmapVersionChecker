@@ -5,19 +5,14 @@ import java.awt.Desktop;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
 import me.roan.infinity.graphics.ui.RListUI.ListRenderable;
@@ -35,17 +30,13 @@ public final class BeatmapItem implements ListRenderable{
 	public static final Color DL_FALSE = new Color(1.0F, 0.0F, 0.0F, 0.15F);
 	public static final Color DL_TRUE_2X = new Color(0.0F, 1.0F, 0.0F, 0.3F);
 	public static final Color DL_FALSE_2X = new Color(1.0F, 0.0F, 0.0F, 0.3F);
-	public static final Color DL_TRUE_4X = new Color(0.0F, 1.0F, 0.0F, 0.6F);
-	public static final Color DL_FALSE_4X = new Color(1.0F, 0.0F, 0.0F, 0.6F);
-	private Image icon;
 	public final LocalBeatmapData local;
 	public OnlineBeatmapData online;
-	private static final ExecutorService imageLoader = Executors.newSingleThreadExecutor();
 	private int y;
 	private int w;
 	private boolean playing = false;
 	protected Boolean download = null;
-	private boolean showControls = true;
+	private boolean showControls = false;
 
 	@Override
 	public void paint(Graphics g1, int x, int y, int w, int h, boolean selected) {
@@ -71,7 +62,7 @@ public final class BeatmapItem implements ListRenderable{
 		}
 		g.setColor(Color.GRAY);
 		g.drawLine(x, y + h - 1, x + w, y + h - 1);
-		g.drawImage(icon, x + 4, y + 4, null);//40 - 71
+		g.drawImage(FileManager.icons.get(local.setid), x + 4, y + 4, null);//40 - 71
 		if(!playing && selected){
 			g.setColor(Color.WHITE);
 			int[] xs = new int[]{x + 4 + 15, x + 4 + 36, x + 4 + 15};
@@ -223,21 +214,7 @@ public final class BeatmapItem implements ListRenderable{
 
 	protected BeatmapItem(File file, LocalBeatmapData data){
 		this.file = file;
-		imageLoader.submit(()->{
-			try {
-				File f = new File(VersionChecker.OSUDIR + File.separator + "Data" + File.separator + "bt" + File.separator + data.setid + ".jpg");
-				if(!f.exists()){
-					f = new File(VersionChecker.OSUDIR + File.separator + "Data" + File.separator + "bt" + File.separator + data.setid + "l.jpg");
-				}
-				if(f.exists()){
-					icon = ImageIO.read(f).getScaledInstance(-1, 16 * 2 + 8, Image.SCALE_SMOOTH);
-				}
-			} catch (IOException | NullPointerException | ArrayIndexOutOfBoundsException e) {
-				//This error is not very important, report it to standard error and move on.
-				System.err.println("Couldn't load beatmap icon for: " + data.title + "/" + data.setid + " icons:[small=" + new File(VersionChecker.OSUDIR + File.separator + "Data" + File.separator + "bt" + File.separator + data.setid + ".jpg").exists() + ",large=" + new File(VersionChecker.OSUDIR + File.separator + "Data" + File.separator + "bt" + File.separator + data.setid + "l.jpg").exists() + "]");
-				e.printStackTrace();
-			}
-		});
 		this.local = data;
+		FileManager.getBeatmapIcon(this);
 	}
 }
