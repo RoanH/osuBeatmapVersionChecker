@@ -9,12 +9,15 @@ import java.awt.event.MouseListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Queue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -44,9 +47,7 @@ import me.roan.versionchecker.BeatmapData.LocalBeatmapData;
 import me.roan.versionchecker.BeatmapData.OnlineBeatmapData;
 
 public class VersionChecker {
-	
-	//https://osu.ppy.sh/osu/874599
-	
+		
 	public static File OSUDIR = new File("C://Users//RoanH//Documents//osu!");
 	private static final Gson gson = new Gson();
 	protected static Queue<Callable<Boolean>> updateQueue = new ConcurrentLinkedQueue<Callable<Boolean>>();
@@ -58,11 +59,6 @@ public class VersionChecker {
 	protected static final JFrame frame = new JFrame();
 	
 	private static boolean backup = true;
-	
-	public static void maint(String[] args){
-		System.out.println(getPage("https://osu.ppy.sh/osu/874599"));
-	}
-
 	
 	public static void main(String[] args){
 		APIKEY = args[0];
@@ -144,6 +140,7 @@ public class VersionChecker {
 		
 		frame.add(content);
 		frame.setMinimumSize(new Dimension(760, 400));
+		frame.setLocationRelativeTo(null);
 		frame.setSize(new Dimension(Toolkit.getDefaultToolkit().getScreenSize().width / 2, Toolkit.getDefaultToolkit().getScreenSize().height / 2));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
@@ -222,15 +219,33 @@ public class VersionChecker {
 	}
 	
 	private static final void updateBeatmap(BeatmapItem item) throws IOException{
+		File osu = new File(OSUDIR, "Songs" + File.separator + item.file + File.separator + item.local.osufilename);
 		if(backup){
 			File dest = new File("backup" + File.separator + item.local.osufilename);
 			dest.createNewFile();
 			FileOutputStream out = new FileOutputStream(dest);
-			FileInputStream in = new FileInputStream(new File(OSUDIR, "Songs" + File.separator + item.file + File.separator + item.local.osufilename));
+			FileInputStream in = new FileInputStream(osu);
 			Util.copyAllData(in, out);
 			in.close();
 			out.flush();
 			out.close();
 		}
+		Path tmp = Files.createTempFile(item.local.osufilename, ".osu");
+		PrintWriter writer = new PrintWriter(new FileOutputStream(tmp.toFile()));
+		HttpURLConnection con = (HttpURLConnection) new URL("https://osu.ppy.sh/osu/" + item.local.mapid).openConnection();
+		con.setRequestMethod("GET");
+		con.setConnectTimeout(1000);
+
+		BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+		String line;
+		while((line = reader.readLine()) != null){
+			writer.println(line);
+		}
+		reader.close();
+		writer.flush();
+		writer.close();
+		Files.move(tmp, osu.toPath(), StandardCopyOption.REPLACE_EXISTING);
+		tmp.toFile().delete();
+		tmp.toFile().deleteOnExit();
 	}
 }
