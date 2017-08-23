@@ -32,6 +32,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
@@ -62,6 +63,7 @@ public class VersionChecker {
 	protected static JTabbedPane categories;
 	protected static final JFrame frame = new JFrame();
 	private static int pollRate = 30;
+	private static JProgressBar progress;
 	
 	private static boolean backup = true;
 	
@@ -78,6 +80,9 @@ public class VersionChecker {
 	}
 	
 	public static final void start(){
+		progress.setMinimum(0);
+		progress.setMaximum(updateQueue.size());
+		progress.setValue(0);
 		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(()->{
 			try{
 				if(!updateQueue.isEmpty()){
@@ -95,6 +100,7 @@ public class VersionChecker {
 				System.out.println("Error");
 				t.printStackTrace();
 			}
+			progress.setValue(progress.getMaximum() - updateQueue.size());
 		}, 0, TimeUnit.MINUTES.toNanos(1) / pollRate, TimeUnit.NANOSECONDS);
 	}
 	
@@ -138,6 +144,9 @@ public class VersionChecker {
 		JPanel header = new JPanel(new BorderLayout());
 		JPanel checking = new JPanel(new GridLayout(3, 1));
 		JButton start = new JButton("Start");
+		start.addActionListener((e)->{
+			start();
+		});
 		JLabel l_rate = new JLabel("API poll rate: ");
 		JSpinner s_rate = new JSpinner(new SpinnerNumberModel(pollRate, 1, 1400, 1));
 		JLabel l_rate_2 = new JLabel(" requests/minute");
@@ -155,7 +164,7 @@ public class VersionChecker {
 			public void stateChanged(ChangeEvent arg0) {
 				int newValue = (int) s_rate.getValue();
 				if(newValue > 60 && prev <= 60){
-					if(JOptionPane.OK_OPTION != JOptionPane.showConfirmDialog(frame, "It's advised to inform peppy when using a roll rate over 60.", "Version Checker", JOptionPane.WARNING_MESSAGE)){
+					if(JOptionPane.OK_OPTION != JOptionPane.showConfirmDialog(frame, "It's advised to inform peppy when using a poll rate over 60.", "Version Checker", JOptionPane.WARNING_MESSAGE)){
 						s_rate.setValue((int)s_rate.getValue() - 1);
 						return;
 					}
@@ -200,6 +209,12 @@ public class VersionChecker {
 		
 		header.add(update_panel, BorderLayout.CENTER);
 		
+		JPanel progress_panel = new JPanel(new BorderLayout());
+		progress = new JProgressBar();
+		progress_panel.setBorder(BorderFactory.createTitledBorder("Progress"));
+		progress_panel.add(progress);
+		header.add(progress_panel, BorderLayout.PAGE_END);
+		
 		content.add(header, BorderLayout.PAGE_START);
 		content.setBorder(BorderFactory.createEtchedBorder());
 		
@@ -227,8 +242,8 @@ public class VersionChecker {
 		}catch(Throwable t){
 			t.printStackTrace();
 		}
-		//System.out.println("data: " + data);
-		//System.out.println(local.status + " " + data.approved);
+		//parsing errors shouldn't happen and if they do we 
+		//never want to return null since we don't want to trigger a retry
 		return data;
 	}
 	
