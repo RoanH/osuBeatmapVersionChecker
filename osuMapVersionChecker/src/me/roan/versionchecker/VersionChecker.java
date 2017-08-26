@@ -144,12 +144,14 @@ public class VersionChecker {
 		JPanel header = new JPanel(new BorderLayout());
 		JPanel checking = new JPanel(new GridLayout(3, 1));
 		JButton start = new JButton("Start");
-		start.addActionListener((e)->{
-			start();
-		});
 		JLabel l_rate = new JLabel("API poll rate: ");
 		JSpinner s_rate = new JSpinner(new SpinnerNumberModel(pollRate, 1, 1400, 1));
 		JLabel l_rate_2 = new JLabel(" requests/minute");
+		start.addActionListener((e)->{
+			s_rate.setEnabled(false);
+			start.setEnabled(false);
+			start();
+		});
 		JPanel rate = new JPanel(new BorderLayout());
 		rate.add(l_rate, BorderLayout.LINE_START);
 		rate.add(s_rate, BorderLayout.CENTER);
