@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -38,6 +39,7 @@ import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.ChangeEvent;
@@ -142,7 +144,7 @@ public class VersionChecker {
 		content.add(categories, BorderLayout.CENTER);
 		
 		JPanel header = new JPanel(new BorderLayout());
-		JPanel checking = new JPanel(new GridLayout(3, 1));
+		JPanel checking = new JPanel(new BorderLayout());
 		JButton start = new JButton("Start");
 		JLabel l_rate = new JLabel("API poll rate: ");
 		JSpinner s_rate = new JSpinner(new SpinnerNumberModel(pollRate, 1, 1400, 1));
@@ -158,6 +160,7 @@ public class VersionChecker {
 		rate.add(l_rate_2, BorderLayout.LINE_END);
 		checking.setPreferredSize(new Dimension(220, 0));
 		JLabel time = new JLabel(String.format("Estimated time: %1$.1f minutes", ((double)updateQueue.size() / (double)pollRate)));
+		time.setHorizontalAlignment(SwingConstants.CENTER);
 		s_rate.addChangeListener(new ChangeListener(){
 			
 			private int prev = pollRate;
@@ -181,9 +184,8 @@ public class VersionChecker {
 				pollRate = newValue;
 			}
 		});
-		checking.add(rate);
-		checking.add(start);
-		checking.add(time);
+		checking.add(rate, BorderLayout.PAGE_START);
+		checking.add(start, BorderLayout.CENTER);
 		header.add(checking, BorderLayout.LINE_START);
 		
 		JButton sel_all = new JButton("Set all maps to 'update'");
@@ -195,10 +197,15 @@ public class VersionChecker {
 		modes.add(desel_unmarked);
 		
 		JButton update = new JButton("Update all selected maps");
+		JCheckBox makeBackup = new JCheckBox("Create backups", false);//TODO listener & info dialog with backup location
+		makeBackup.setHorizontalAlignment(SwingConstants.CENTER);
+		JPanel side = new JPanel(new BorderLayout());
+		side.add(update, BorderLayout.CENTER);
+		side.add(makeBackup, BorderLayout.PAGE_START);
 		
 		JPanel update_panel = new JPanel(new BorderLayout());
 		update_panel.add(modes, BorderLayout.CENTER);
-		update_panel.add(update, BorderLayout.LINE_END);
+		update_panel.add(side, BorderLayout.LINE_END);
 		
 		JPanel help_panel = new JPanel(new BorderLayout());
 		JButton help = new JButton("Help");
@@ -214,7 +221,8 @@ public class VersionChecker {
 		JPanel progress_panel = new JPanel(new BorderLayout());
 		progress = new JProgressBar();
 		progress_panel.setBorder(BorderFactory.createTitledBorder("Progress"));
-		progress_panel.add(progress);
+		progress_panel.add(time, BorderLayout.PAGE_START);
+		progress_panel.add(progress, BorderLayout.CENTER);
 		header.add(progress_panel, BorderLayout.PAGE_END);
 		
 		content.add(header, BorderLayout.PAGE_START);
