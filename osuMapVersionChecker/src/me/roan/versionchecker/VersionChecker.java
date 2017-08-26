@@ -66,6 +66,8 @@ public class VersionChecker {
 	protected static final JFrame frame = new JFrame();
 	private static int pollRate = 30;
 	private static JProgressBar progress;
+	private static boolean checking = true;
+	private static JLabel time;
 	
 	private static boolean backup = true;
 	
@@ -85,7 +87,7 @@ public class VersionChecker {
 		progress.setMinimum(0);
 		progress.setMaximum(updateQueue.size());
 		progress.setValue(0);
-		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(()->{
+		Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(()->{
 			try{
 				if(!updateQueue.isEmpty()){
 					Callable<Boolean> task = updateQueue.poll();
@@ -95,6 +97,7 @@ public class VersionChecker {
 						beatmaps.repaint();
 					}
 				}else{
+					checking = false;
 					Thread.sleep(Long.MAX_VALUE);
 				}
 				System.out.println("Queue size: " + updateQueue.size());
@@ -103,6 +106,7 @@ public class VersionChecker {
 				t.printStackTrace();
 			}
 			progress.setValue(progress.getMaximum() - updateQueue.size());
+			time.setText(String.format("Estimated time until completion: %1$.1f minutes", ((double)updateQueue.size() / (double)pollRate)));
 		}, 0, TimeUnit.MINUTES.toNanos(1) / pollRate, TimeUnit.NANOSECONDS);
 	}
 	
@@ -159,7 +163,7 @@ public class VersionChecker {
 		rate.add(s_rate, BorderLayout.CENTER);
 		rate.add(l_rate_2, BorderLayout.LINE_END);
 		checking.setPreferredSize(new Dimension(220, 0));
-		JLabel time = new JLabel(String.format("Estimated time: %1$.1f minutes", ((double)updateQueue.size() / (double)pollRate)));
+		time = new JLabel(String.format("Estimated time until completion: %1$.1f minutes", ((double)updateQueue.size() / (double)pollRate)));
 		time.setHorizontalAlignment(SwingConstants.CENTER);
 		s_rate.addChangeListener(new ChangeListener(){
 			
@@ -179,7 +183,7 @@ public class VersionChecker {
 						return;
 					}
 				}
-				time.setText(String.format("Estimated time: %1$.1f minutes", ((double)updateQueue.size() / (double)newValue)));
+				time.setText(String.format("Estimated time until completion: %1$.1f minutes", ((double)updateQueue.size() / (double)newValue)));
 				prev = newValue;
 				pollRate = newValue;
 			}
@@ -195,8 +199,21 @@ public class VersionChecker {
 		modes.add(sel_all);
 		modes.add(sel_unmarked);
 		modes.add(desel_unmarked);
+		sel_all.addActionListener((e)->{
+			FileManager.setSelected(true);
+		});
+		sel_unmarked.addActionListener((e)->{
+			FileManager.setSelected(false);
+		});
+		desel_unmarked.addActionListener((e)->{
+			FileManager.setUnselected();
+		});
+		sel_all.setEnabled(false);
+		sel_unmarked.setEnabled(false);
+		desel_unmarked.setEnabled(false);
 		
 		JButton update = new JButton("Update all selected maps");
+		update.setEnabled(false);
 		JCheckBox makeBackup = new JCheckBox("Create backups", false);//TODO listener & info dialog with backup location
 		makeBackup.setHorizontalAlignment(SwingConstants.CENTER);
 		JPanel side = new JPanel(new BorderLayout());
