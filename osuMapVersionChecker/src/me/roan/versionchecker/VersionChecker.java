@@ -5,6 +5,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.BufferedReader;
@@ -23,6 +25,7 @@ import java.util.Queue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.BorderFactory;
@@ -44,6 +47,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileSystemView;
 
 import com.google.gson.Gson;
 
@@ -66,10 +70,13 @@ public class VersionChecker {
 	protected static final JFrame frame = new JFrame();
 	private static int pollRate = 30;
 	private static JProgressBar progress;
-	private static boolean checking = true;
 	private static JLabel time;
+	private static Runnable openUpdateControls;
+	private static Runnable enableUpdateButton;
 	
-	private static boolean backup = true;
+	private static boolean backup = false;
+	
+	private static ScheduledFuture<?> task;
 	
 	public static void main(String[] args){
 		APIKEY = args[0];
@@ -83,11 +90,11 @@ public class VersionChecker {
 		createGUI();
 	}
 	
-	public static final void start(){
+	public static final void startChecking(){
 		progress.setMinimum(0);
 		progress.setMaximum(updateQueue.size());
 		progress.setValue(0);
-		Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(()->{
+		task = Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(()->{
 			try{
 				if(!updateQueue.isEmpty()){
 					Callable<Boolean> task = updateQueue.poll();
@@ -97,7 +104,7 @@ public class VersionChecker {
 						beatmaps.repaint();
 					}
 				}else{
-					checking = false;
+					openUpdateControls.run();
 					Thread.sleep(Long.MAX_VALUE);
 				}
 				System.out.println("Queue size: " + updateQueue.size());
@@ -106,7 +113,34 @@ public class VersionChecker {
 				t.printStackTrace();
 			}
 			progress.setValue(progress.getMaximum() - updateQueue.size());
-			time.setText(String.format("Estimated time until completion: %1$.1f minutes", ((double)updateQueue.size() / (double)pollRate)));
+			time.setText(String.format("Estimated time until completion: %1$.2f minutes", ((double)updateQueue.size() / (double)pollRate)));
+		}, 0, TimeUnit.MINUTES.toNanos(1) / pollRate, TimeUnit.NANOSECONDS);
+	}
+	
+	public static final void startUpdating(){
+		task.cancel(true);
+		if(pollRate > 10){
+			pollRate = 10;
+		}
+		FileManager.disableControls();
+		FileManager.submitUpdateList();
+		progress.setMinimum(0);
+		progress.setMaximum(updateQueue.size());
+		progress.setValue(0);
+		Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(()->{
+			try{
+				if(!updateQueue.isEmpty()){
+					updateQueue.poll().call();
+				}else{
+					Thread.sleep(Long.MAX_VALUE);
+				}
+				System.out.println("Queue size: " + updateQueue.size());
+			}catch(Throwable t){
+				System.out.println("Error");
+				t.printStackTrace();
+			}
+			progress.setValue(progress.getMaximum() - updateQueue.size());
+			time.setText(String.format("Estimated time until completion: %1$.2f minutes", ((double)updateQueue.size() / (double)pollRate)));
 		}, 0, TimeUnit.MINUTES.toNanos(1) / pollRate, TimeUnit.NANOSECONDS);
 	}
 	
@@ -156,14 +190,14 @@ public class VersionChecker {
 		start.addActionListener((e)->{
 			s_rate.setEnabled(false);
 			start.setEnabled(false);
-			start();
+			startChecking();
 		});
 		JPanel rate = new JPanel(new BorderLayout());
 		rate.add(l_rate, BorderLayout.LINE_START);
 		rate.add(s_rate, BorderLayout.CENTER);
 		rate.add(l_rate_2, BorderLayout.LINE_END);
 		checking.setPreferredSize(new Dimension(220, 0));
-		time = new JLabel(String.format("Estimated time until completion: %1$.1f minutes", ((double)updateQueue.size() / (double)pollRate)));
+		time = new JLabel(String.format("Estimated time until completion: %1$.2f minutes", ((double)updateQueue.size() / (double)pollRate)));
 		time.setHorizontalAlignment(SwingConstants.CENTER);
 		s_rate.addChangeListener(new ChangeListener(){
 			
@@ -174,16 +208,17 @@ public class VersionChecker {
 				int newValue = (int) s_rate.getValue();
 				if(newValue > 60 && prev <= 60){
 					if(JOptionPane.OK_OPTION != JOptionPane.showConfirmDialog(frame, "It's advised to inform peppy when using a poll rate over 60.", "Version Checker", JOptionPane.WARNING_MESSAGE)){
-						s_rate.setValue((int)s_rate.getValue() - 1);
-						return;
-					}
-				}else if(newValue > 1200 && prev <= 1200){
-					if(JOptionPane.OK_OPTION != JOptionPane.showConfirmDialog(frame, "By going over 1200 you enter the burst capability zone of the API it's advised not to do this.", "Version Checker", JOptionPane.WARNING_MESSAGE)){
-						s_rate.setValue((int)s_rate.getValue() - 1);
+						s_rate.setValue(prev = 60);
 						return;
 					}
 				}
-				time.setText(String.format("Estimated time until completion: %1$.1f minutes", ((double)updateQueue.size() / (double)newValue)));
+				if(newValue > 1200 && prev <= 1200){
+					if(JOptionPane.OK_OPTION != JOptionPane.showConfirmDialog(frame, "By going over 1200 you enter the burst capability zone of the API it's advised not to do this.", "Version Checker", JOptionPane.WARNING_MESSAGE)){
+						s_rate.setValue(prev = 1200);
+						return;
+					}
+				}
+				time.setText(String.format("Estimated time until completion: %1$.2f minutes", ((double)updateQueue.size() / (double)newValue)));
 				prev = newValue;
 				pollRate = newValue;
 			}
@@ -199,22 +234,58 @@ public class VersionChecker {
 		modes.add(sel_all);
 		modes.add(sel_unmarked);
 		modes.add(desel_unmarked);
+		JButton update = new JButton("Update all selected maps");
+		enableUpdateButton = ()->{
+			update.setEnabled(true);
+		};
 		sel_all.addActionListener((e)->{
 			FileManager.setSelected(true);
+			enableUpdateButton();
+			frame.repaint();
 		});
 		sel_unmarked.addActionListener((e)->{
 			FileManager.setSelected(false);
+			sel_unmarked.setEnabled(false);
+			desel_unmarked.setEnabled(false);
+			enableUpdateButton();
+			frame.repaint();
 		});
 		desel_unmarked.addActionListener((e)->{
 			FileManager.setUnselected();
+			sel_unmarked.setEnabled(false);
+			desel_unmarked.setEnabled(false);
+			enableUpdateButton();
+			frame.repaint();
 		});
 		sel_all.setEnabled(false);
 		sel_unmarked.setEnabled(false);
 		desel_unmarked.setEnabled(false);
-		
-		JButton update = new JButton("Update all selected maps");
 		update.setEnabled(false);
-		JCheckBox makeBackup = new JCheckBox("Create backups", false);//TODO listener & info dialog with backup location
+		openUpdateControls = ()->{
+			sel_all.setEnabled(true);
+			sel_unmarked.setEnabled(true);
+			desel_unmarked.setEnabled(true);
+		};
+		update.addActionListener((e)->{
+			sel_all.setEnabled(false);
+			sel_unmarked.setEnabled(false);
+			desel_unmarked.setEnabled(false);
+			update.setEnabled(false);
+			startUpdating();
+		});
+		JCheckBox makeBackup = new JCheckBox("Create backups", false);
+		makeBackup.addActionListener(new ActionListener(){
+			
+			private boolean informed = false;
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if(!informed){
+					JOptionPane.showMessageDialog(frame, "<html><center>A copy will now be made for each map.<br>After updating finishes the copies can be found in:<br>" + new File(FileSystemView.getFileSystemView().getDefaultDirectory(), "backup").getAbsolutePath() + "</center></html>", "Version Checker", JOptionPane.INFORMATION_MESSAGE);
+				}
+				backup = makeBackup.isSelected();
+			}
+		});
 		makeBackup.setHorizontalAlignment(SwingConstants.CENTER);
 		JPanel side = new JPanel(new BorderLayout());
 		side.add(update, BorderLayout.CENTER);
@@ -226,6 +297,9 @@ public class VersionChecker {
 		
 		JPanel help_panel = new JPanel(new BorderLayout());
 		JButton help = new JButton("Help");
+		help.addActionListener((e)->{
+			showHelp();
+		});
 		help_panel.add(help, BorderLayout.CENTER);
 		header.add(help_panel, BorderLayout.LINE_END);
 		
@@ -252,8 +326,13 @@ public class VersionChecker {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 	}
-	
+	private static boolean debug = true;
 	protected static OnlineBeatmapData checkState(LocalBeatmapData local){
+		if(debug){
+			OnlineBeatmapData d = new OnlineBeatmapData();
+			d.generated = true;
+			return d;
+		}
 		String req = getPage("https://osu.ppy.sh/api/get_beatmaps?k=" + APIKEY + "&h=" + local.hash);
 		if(req == null){
 			return null;//returning null will trigger a retry later on
@@ -325,10 +404,12 @@ public class VersionChecker {
 		}
 	}
 	
-	private static final void updateBeatmap(BeatmapItem item) throws IOException{
-		File osu = new File(OSUDIR, "Songs" + File.separator + item.file + File.separator + item.local.osufilename);
+	protected static final void updateBeatmap(BeatmapItem item) throws IOException{
+		File osu = new File(item.file, item.local.osufilename);
 		if(backup){
-			File dest = new File("backup" + File.separator + item.local.osufilename);
+			File dest = new File(FileSystemView.getFileSystemView().getDefaultDirectory(), "backup");
+			dest.mkdirs();
+			dest = new File(dest, item.local.osufilename);
 			dest.createNewFile();
 			FileOutputStream out = new FileOutputStream(dest);
 			FileInputStream in = new FileInputStream(osu);
@@ -336,6 +417,9 @@ public class VersionChecker {
 			in.close();
 			out.flush();
 			out.close();
+		}
+		if(debug){
+			return;
 		}
 		Path tmp = Files.createTempFile(item.local.osufilename, ".osu");
 		PrintWriter writer = new PrintWriter(new FileOutputStream(tmp.toFile()));
@@ -354,5 +438,71 @@ public class VersionChecker {
 		Files.move(tmp, osu.toPath(), StandardCopyOption.REPLACE_EXISTING);
 		tmp.toFile().delete();
 		tmp.toFile().deleteOnExit();
+	}
+
+	protected static void enableUpdateButton() {
+		if(FileManager.beatmapsUpdateModel.size() == BeatmapItem.choiceMade){
+			enableUpdateButton.run();
+		}
+	}
+	
+	private static void showHelp(){
+		JPanel info = new JPanel(new BorderLayout());
+		JLabel general = new JLabel("");//TODO
+		JLabel api = new JLabel("<html><u>Statement with regards to the API poll rate:</u><br>"
+				+ "<i>\"Current rate limit is set at an insanely high 1200 requests per minute, with burst capability of up to<br>"
+				+ "200 beyond that. If you require more, you probably fall into the above category of abuse. If you are<br>"
+				+ "doing more than 60 requests a minute, you should probably give peppy a yell.\"</i></html>");
+		api.setBorder(BorderFactory.createTitledBorder("API"));
+		info.add(api, BorderLayout.CENTER);
+		JPanel programinfo = new JPanel(new GridLayout(3, 1));
+		String v = checkVersion();
+		JLabel version = new JLabel("Version: v1.0, latest version: " + (v == null ? "Unknow" : v));//XXX version number
+		JLabel gitlink = new JLabel("https://github.com/RoanH/KeysPerSecond");
+		JLabel formlink = new JLabel("https://osu.ppy.sh/community/forums/topics/");
+		programinfo.add(formlink);
+		programinfo.add(gitlink);
+		programinfo.add(version);
+		programinfo.setBorder(BorderFactory.createTitledBorder("Info"));
+		info.add(programinfo, BorderLayout.PAGE_END);
+		JOptionPane.showMessageDialog(frame, info, "Version Checker", JOptionPane.INFORMATION_MESSAGE);
+	}
+	
+	/**
+	 * Check the KeysPerSecond version to see
+	 * if we are running the latest version
+	 * @return The latest version
+	 */
+	private static final String checkVersion(){
+		try{ 			
+			HttpURLConnection con = (HttpURLConnection) new URL("https://api.github.com/repos/RoanH/osuMapVersionChecker/tags").openConnection(); 			
+			con.setRequestMethod("GET"); 		
+			con.setConnectTimeout(10000); 					   
+			BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream())); 	
+			String line = reader.readLine(); 		
+			reader.close(); 	
+			String[] versions = line.split("\"name\":\"v");
+			int max_main = 3;
+			int max_sub = 0;
+			String[] tmp;
+			for(int i = 1; i < versions.length; i++){
+				tmp = versions[i].split("\",\"")[0].split("\\.");
+				if(Integer.parseInt(tmp[0]) > max_main){
+					max_main = Integer.parseInt(tmp[0]);
+					max_sub = Integer.parseInt(tmp[1]);
+				}else if(Integer.parseInt(tmp[0]) < max_main){
+					continue;
+				}else{
+					if(Integer.parseInt(tmp[1]) > max_sub){
+						max_sub = Integer.parseInt(tmp[1]);
+					}
+				}
+			}
+			return "v" + max_main + "." + max_sub;
+		}catch(Exception e){ 	
+			return null;
+			//No Internet access or something else is wrong,
+			//No problem though since this isn't a critical function
+		}
 	}
 }

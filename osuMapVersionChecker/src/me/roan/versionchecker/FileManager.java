@@ -24,6 +24,26 @@ public class FileManager{
 	protected static void init(){
 		addAll(beatmapsModel, parseB());
 	}
+	
+	protected static void disableControls(){
+		for(int i = 0; i < beatmapsUpdateModel.size(); i++){
+			BeatmapItem item = beatmapsUpdateModel.getElementAt(i);
+			item.showControls = false;
+		}
+		VersionChecker.frame.repaint();
+	}
+	
+	protected static void submitUpdateList(){
+		for(int i = 0; i < beatmapsUpdateModel.size(); i++){
+			BeatmapItem item = beatmapsUpdateModel.getElementAt(i);
+			if(item.download != null && item.download == true){
+				VersionChecker.updateQueue.add(()->{
+					VersionChecker.updateBeatmap(item);
+					return true;
+				});
+			}
+		}
+	}
 
 	private static final void addAll(DefaultListModel<BeatmapItem> model, BeatmapItem[] items){
 		for(BeatmapItem p : items){
@@ -35,6 +55,7 @@ public class FileManager{
 		for(int i = 0; i < beatmapsUpdateModel.size(); i++){
 			BeatmapItem item = beatmapsUpdateModel.getElementAt(i);
 			if(item.download == null || override){
+				BeatmapItem.choiceMade++;
 				item.download = true;
 			}
 		}
@@ -44,6 +65,7 @@ public class FileManager{
 		for(int i = 0; i < beatmapsUpdateModel.size(); i++){
 			BeatmapItem item = beatmapsUpdateModel.getElementAt(i);
 			if(item.download == null){
+				BeatmapItem.choiceMade++;
 				item.download = false;
 			}
 		}

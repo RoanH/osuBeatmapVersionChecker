@@ -36,7 +36,8 @@ public final class BeatmapItem implements ListRenderable{
 	private int w;
 	private boolean playing = false;
 	protected Boolean download = null;
-	private boolean showControls = false;
+	protected boolean showControls = false;
+	protected static int choiceMade = 0;
 
 	@Override
 	public void paint(Graphics g1, int x, int y, int w, int h, boolean selected) {
@@ -143,7 +144,6 @@ public final class BeatmapItem implements ListRenderable{
 			g.setColor(Color.BLACK);
 			g.drawString("Update", (int) w - 80 - 78 - 76 - 4 + ((76 - g.getFontMetrics().stringWidth("Update")) / 2), y + 17);
 			g.drawString("Don't update", (int) w - 78 - 80 - 76 - 4 + ((76 - g.getFontMetrics().stringWidth("Don't update")) / 2), y + 12 + 14 + 12);
-			
 		}
 	}
 
@@ -197,9 +197,12 @@ public final class BeatmapItem implements ListRenderable{
 				Desktop.getDesktop().browse(new URI("https://osu.ppy.sh/forum/t/" + local.thread));
 			}else if(showControls && e.getX() > w - 80 - 80 - 76 && e.getX() < w - 4 - 80 - 76 && e.getY() > y + 4 && e.getY() < y + 23){
 				download = true;
+				choiceMade++;
+				VersionChecker.enableUpdateButton();
 				e.getComponent().repaint();
 			}else if(showControls && e.getX() > w - 80 - 80 - 76 && e.getX() < w - 4 - 80 - 76 && e.getY() > y + 25 && e.getY() < y + 44){
 				download = false;
+				choiceMade++;
 				e.getComponent().repaint();
 			}
 		} catch (Throwable e1) {
