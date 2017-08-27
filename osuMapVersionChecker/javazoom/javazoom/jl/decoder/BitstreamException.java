@@ -40,6 +40,7 @@ package javazoom.jl.decoder;
 public class BitstreamException extends JavaLayerException
 	implements BitstreamErrors
 {	
+	private static final long serialVersionUID = -5195786983687628551L;
 	private int errorcode = UNKNOWN_ERROR;
 	
 	public BitstreamException(String msg, Throwable t)

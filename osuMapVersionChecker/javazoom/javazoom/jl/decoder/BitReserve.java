@@ -57,11 +57,9 @@ final class BitReserve
 	
 	private int 					offset, totbit, buf_byte_idx;
 	private final int[] 			buf = new int[BUFSIZE];
-	private int 					buf_bit_idx;
 	
    BitReserve()
    {
-	  
 	  offset = 0;
       totbit = 0;
       buf_byte_idx = 0;	  

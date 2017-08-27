@@ -42,11 +42,6 @@ import javazoom.jl.decoder.SampleBuffer;
 public class Player
 {	  	
 	/**
-	 * The current frame number. 
-	 */
-	private int frame = 0;
-	
-	/**
 	 * The MPEG audio bitstream. 
 	 */
 	// javac blank final bug. 
