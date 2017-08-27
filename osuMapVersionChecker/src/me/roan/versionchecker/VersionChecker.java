@@ -90,7 +90,7 @@ public class VersionChecker {
 	/**
 	 * Main frame
 	 */
-	protected static final JFrame frame = new JFrame();
+	protected static final JFrame frame = new JFrame("Version Checker");
 	/**
 	 * API poll rate
 	 */
@@ -321,7 +321,7 @@ public class VersionChecker {
 			desel_unmarked.setEnabled(true);
 		};
 		update.addActionListener((e)->{
-			if(JOptionPane.OK_OPTION != JOptionPane.showConfirmDialog(frame, "Maps will be updated automatically, but F5 has to be pressed ingame to load the new versions.", "Version Checker", JOptionPane.OK_CANCEL_OPTION)){
+			if(JOptionPane.OK_OPTION != JOptionPane.showConfirmDialog(frame, "Maps will be updated automatically, but F5 has to be pressed ingame or osu! restarted to load the new versions.\nIt's also advised to close osu! while maps are being updated", "Version Checker", JOptionPane.OK_CANCEL_OPTION)){
 				return;
 			}
 			sel_all.setEnabled(false);
@@ -532,7 +532,7 @@ public class VersionChecker {
 				+ "<u>Update available:</u><br>"
 				+ "Maps get listed under 'update avaiable' if an newer version of the map exists.<br>"
 				+ "Maps can be updated automatically, but after updating finishes F5 has to be<br>"
-				+ "pressed ingame to load the update versions.</html>");//TODO
+				+ "pressed ingame or osu! restarted to load the update versions.</html>");//TODO
 		general.setBorder(BorderFactory.createTitledBorder("General"));
 		info.add(general, BorderLayout.PAGE_START);
 		JLabel api = new JLabel("<html><u>Statement with regard to the API poll rate:</u><br>"
