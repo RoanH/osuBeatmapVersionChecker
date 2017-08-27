@@ -33,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -61,7 +62,7 @@ import me.roan.versionchecker.BeatmapData.OnlineBeatmapData;
 
 public class VersionChecker {
 		
-	public static File OSUDIR = new File("C://Users//RoanH//Documents//osu!");
+	public static File OSUDIR;
 	private static final Gson gson = new Gson();
 	protected static Queue<Callable<Boolean>> updateQueue = new ConcurrentLinkedQueue<Callable<Boolean>>();
 	private static final JList<BeatmapItem> beatmaps = new JList<BeatmapItem>(FileManager.beatmapsModel);
@@ -82,6 +83,7 @@ public class VersionChecker {
 	
 	public static void main(String[] args){
 		APIKEY = args[0];
+		OSUDIR = findOsuDir();
 		try {
 			Database.readDatabase();
 		} catch (IOException e) {
@@ -147,11 +149,6 @@ public class VersionChecker {
 	}
 	
 	public static void createGUI(){
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
-		}
-
 		JPanel content = new JPanel(new BorderLayout());
 		categories = new JTabbedPane();
 		
@@ -577,5 +574,44 @@ public class VersionChecker {
 			//No Internet access or something else is wrong,
 			//No problem though since this isn't a critical function
 		}
+	}
+	
+	public static File findOsuDir() {
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
+		}
+		File dir;
+		dir = new File("C:\\Users\\" + System.getProperty("user.name") + "\\AppData\\Local\\osu!");
+		if(new File(dir, "osu!.exe").exists()){
+			return dir;
+		}
+		dir = new File("C:\\osu!");
+		if(new File(dir, "osu!.exe").exists()){
+			return dir;
+		}
+		dir = new File("D:\\osu!");
+		if(new File(dir, "osu!.exe").exists()){
+			return dir;
+		}
+		dir = new File("C:\\Program Files (x86)\\osu!\\");
+		if(new File(dir, "osu!.exe").exists()){
+			return dir;
+		}
+		dir = new File("C:\\Program Files\\osu!\\");
+		if(new File(dir, "osu!.exe").exists()){
+			return dir;
+		}
+		JOptionPane.showMessageDialog(null, "Unable to automatically detect you osu! folder\n"
+				                          + "Please select the folder yourself", "osu! Replay map", JOptionPane.QUESTION_MESSAGE);
+		JFileChooser chooser = new JFileChooser();
+		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		chooser.setMultiSelectionEnabled(false);
+		if(chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION && new File(chooser.getSelectedFile(), "osu!.exe").exists()){
+			return chooser.getSelectedFile();
+		}
+		JOptionPane.showMessageDialog(null, "Unable to open osu! directory! (exiting)", "Version Checker", JOptionPane.ERROR_MESSAGE);
+		System.exit(0);
+		return null;
 	}
 }
