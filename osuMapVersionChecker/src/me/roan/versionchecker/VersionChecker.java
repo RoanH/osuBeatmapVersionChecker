@@ -61,25 +61,68 @@ import me.roan.infinity.util.Util;
 import me.roan.versionchecker.BeatmapData.LocalBeatmapData;
 import me.roan.versionchecker.BeatmapData.OnlineBeatmapData;
 
+/**
+ * Program to check for beatmap updates
+ * @author Roan
+ */
 public class VersionChecker {
-		
+	/**
+	 * osu! directory
+	 */
 	public static File OSUDIR;
+	/**
+	 * Gson instance used to parse the API responses
+	 */
 	private static final Gson gson = new Gson();
+	/**
+	 * Queue with the task that have to be executed.
+	 * Both update and checking task are put in this queue.
+	 */
 	protected static Queue<Callable<Boolean>> updateQueue = new ConcurrentLinkedQueue<Callable<Boolean>>();
-	private static final JList<BeatmapItem> beatmaps = new JList<BeatmapItem>(FileManager.beatmapsModel);
-	private static final JList<BeatmapItem> beatmapsUpdate = new JList<BeatmapItem>(FileManager.beatmapsUpdateModel);
-	private static final JList<BeatmapItem> beatmapsState = new JList<BeatmapItem>(FileManager.beatmapsStateModel);
+	/**
+	 * osu! API key
+	 */
 	protected static String APIKEY;
+	/**
+	 * JTabbedPane with the beatmap listings
+	 */
 	protected static JTabbedPane categories;
+	/**
+	 * Main frame
+	 */
 	protected static final JFrame frame = new JFrame();
+	/**
+	 * API poll rate
+	 */
 	private static int pollRate = 30;
+	/**
+	 * JProgressBar showing the
+	 * progress of the current task
+	 */
 	private static JProgressBar progress;
+	/**
+	 * JLabel showing the estimated time
+	 * until completion
+	 */
 	private static JLabel time;
+	/**
+	 * Runnable that enables the update
+	 * control buttons
+	 */
 	private static Runnable openUpdateControls;
-	private static Runnable enableUpdateButton;
-	
+	/**
+	 * The update button
+	 */
+	private static JButton update;
+	/**
+	 * Whether or not to create a backup
+	 * of maps that are selected to be
+	 * updated
+	 */
 	private static boolean backup = false;
-	
+	/**
+	 * Future of the checking task
+	 */
 	private static ScheduledFuture<?> task;
 	
 	public static void main(String[] args){
@@ -87,14 +130,18 @@ public class VersionChecker {
 		try {
 			Database.readDatabase();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			JOptionPane.showMessageDialog(frame, "A critical error occurred!", "Version Checker", JOptionPane.ERROR_MESSAGE);
+			return;
 		}
 		FileManager.init();
 		createGUI();
 		APIKEY = getAPIKey();
 	}
 	
+	/**
+	 * Starts the loop that checks the
+	 * state of each beatmap
+	 */
 	public static final void startChecking(){
 		progress.setMinimum(0);
 		progress.setMaximum(updateQueue.size());
@@ -106,7 +153,7 @@ public class VersionChecker {
 					if(!task.call()){
 						updateQueue.add(task);
 					}else{
-						beatmaps.repaint();
+						frame.repaint();
 					}
 				}else{
 					openUpdateControls.run();
@@ -122,6 +169,10 @@ public class VersionChecker {
 		}, 0, TimeUnit.MINUTES.toNanos(1) / pollRate, TimeUnit.NANOSECONDS);
 	}
 	
+	/**
+	 * Starts the loop that updates all
+	 * the selected beatmaps
+	 */
 	public static final void startUpdating(){
 		task.cancel(true);
 		if(pollRate > 10){
@@ -149,11 +200,17 @@ public class VersionChecker {
 		}, 0, TimeUnit.MINUTES.toNanos(1) / pollRate, TimeUnit.NANOSECONDS);
 	}
 	
+	/**
+	 * Creates and shows the main GUI
+	 */
 	public static void createGUI(){
 		JPanel content = new JPanel(new BorderLayout());
 		categories = new JTabbedPane();
 		
 		BeatmapItemMouseListener listener = new BeatmapItemMouseListener();
+		JList<BeatmapItem> beatmaps = new JList<BeatmapItem>(FileManager.beatmapsModel);
+		JList<BeatmapItem> beatmapsUpdate = new JList<BeatmapItem>(FileManager.beatmapsUpdateModel);
+		JList<BeatmapItem> beatmapsState = new JList<BeatmapItem>(FileManager.beatmapsStateModel);
 		
 		beatmaps.addMouseListener(listener);
 		beatmaps.setUI(new RListUI());
@@ -234,10 +291,7 @@ public class VersionChecker {
 		modes.add(sel_all);
 		modes.add(sel_unmarked);
 		modes.add(desel_unmarked);
-		JButton update = new JButton("Update all selected maps");
-		enableUpdateButton = ()->{
-			update.setEnabled(true);
-		};
+		update = new JButton("Update all selected maps");
 		sel_all.addActionListener((e)->{
 			FileManager.setSelected(true);
 			enableUpdateButton();
@@ -330,6 +384,12 @@ public class VersionChecker {
 		frame.setVisible(true);
 	}
 	
+	/**
+	 * Gets the online status of the beatmap
+	 * and returns it
+	 * @param local The local status of the beatmap
+	 * @return The on;line status of the beatmap
+	 */
 	protected static OnlineBeatmapData checkState(LocalBeatmapData local){
 		String req = getPage("https://osu.ppy.sh/api/get_beatmaps?k=" + APIKEY + "&h=" + local.hash);
 		if(req == null){
@@ -369,11 +429,15 @@ public class VersionChecker {
 		    reader.close();
 		    return line;
 		}catch(Exception e){
-			System.out.println("Page error");
 			return null;
 		}
 	}
 	
+	/**
+	 * Listener that notifies the beatmapitem
+	 * that was clicked of the mouse event
+	 * @author Roan
+	 */
 	private static final class BeatmapItemMouseListener implements MouseListener{
 
 		@Override
@@ -402,6 +466,12 @@ public class VersionChecker {
 		}
 	}
 	
+	/**
+	 * Updates the given beatmap item
+	 * with the online version
+	 * @param item The map to update
+	 * @throws IOException When an IOException occurs
+	 */
 	protected static final void updateBeatmap(BeatmapItem item) throws IOException{
 		File osu = new File(item.file, item.local.osufilename);
 		if(backup){
@@ -435,9 +505,12 @@ public class VersionChecker {
 		tmp.toFile().deleteOnExit();
 	}
 
+	/**
+	 * Enables the 'start updating' button
+	 */
 	protected static void enableUpdateButton() {
 		if(FileManager.beatmapsUpdateModel.size() == BeatmapItem.choiceMade){
-			enableUpdateButton.run();
+			update.setEnabled(true);
 		}
 	}
 	
@@ -577,6 +650,11 @@ public class VersionChecker {
 		}
 	}
 	
+	/**
+	 * Tries to find the osu! dir or
+	 * promts the user for it
+	 * @return The osu! directetory
+	 */
 	private static File findOsuDir() {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -616,15 +694,19 @@ public class VersionChecker {
 		return null;
 	}
 	
+	/**
+	 * Prompts the user for their API key
+	 * @return The API key
+	 */
 	private static String getAPIKey(){
 		JPanel form = new JPanel(new BorderLayout());
 		form.add(new JLabel("Please input your API key."), BorderLayout.PAGE_START);
 		form.add(new JLabel("API key: "), BorderLayout.LINE_START);
 		JTextField key = new JTextField(30);
 		form.add(key, BorderLayout.CENTER);
-		
-		JOptionPane.showMessageDialog(null, form, "Version Checker", JOptionPane.QUESTION_MESSAGE);
-		
+		if(JOptionPane.OK_OPTION != JOptionPane.showOptionDialog(null, form, "Version Checker", JOptionPane.OK_OPTION, JOptionPane.QUESTION_MESSAGE, null, new String[]{"OK"}, 0)){
+			System.exit(0);
+		}
 		return key.getText();
 	}
 }
