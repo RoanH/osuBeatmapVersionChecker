@@ -109,8 +109,6 @@ public final class BeatmapItem implements ListRenderable{
 		g.drawString(String.format("%02d:%02d",
 			    TimeUnit.MILLISECONDS.toMinutes(local.total_length) % TimeUnit.HOURS.toMinutes(1),
 			    TimeUnit.MILLISECONDS.toSeconds(local.total_length) % TimeUnit.MINUTES.toSeconds(1)),  (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 140 + loff, y + 12 + 14 + 15);
-		
-		//3 * 16 = 48 | 40 - 38:n 36:y12
 		g.setFont(finfob);
 		g.setColor(PINK);
 		g.fillRect(w - 80, y + 4, 76, 19);
@@ -147,11 +145,23 @@ public final class BeatmapItem implements ListRenderable{
 		}
 	}
 
+	/**
+	 * Converts the local status ID
+	 * code to something readable
+	 * @param id The status ID
+	 * @return The status as text
+	 */
 	//0=unknow,4=ranked,5=approved,7=loved?,2=graveyard/pending,1=not submited>
 	private static String getStatusLocal(int id){
 		return id == 1 ? "Not submitted" : (id == 2 ? "Pending" : (id == 4 ? "Ranked" : (id == 5 ? "Approved" : (id == 7 ? "Loved" : "Unknow"))));
 	}
 	
+	/**
+	 * Converts the online status ID
+	 * code to something readable
+	 * @param id The status ID
+	 * @return The status as text
+	 */
 	//4=loved,3=qualified,2=approved,1=ranked,0=pending,-1= WIP,-2=graveyard
 	private static String getStatusOnline(int id){
 		return id == 4 ? "Loved" : (id == 3 ? "Qualified" : (id == 2 ? "Approved" : (id == 1 ? "Ranked" : (id == 0 ? "Pending" : (id == -1 ? "WIP" : (id == -2 ? "Graveyard" : "Unknow"))))));

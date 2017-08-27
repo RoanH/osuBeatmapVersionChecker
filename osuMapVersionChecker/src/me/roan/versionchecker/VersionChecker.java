@@ -331,13 +331,8 @@ public class VersionChecker {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 	}
-	private static boolean debug = true;
+	
 	protected static OnlineBeatmapData checkState(LocalBeatmapData local){
-		if(debug){
-			OnlineBeatmapData d = new OnlineBeatmapData();
-			d.generated = true;
-			return d;
-		}
 		String req = getPage("https://osu.ppy.sh/api/get_beatmaps?k=" + APIKEY + "&h=" + local.hash);
 		if(req == null){
 			return null;//returning null will trigger a retry later on
@@ -423,9 +418,6 @@ public class VersionChecker {
 			out.flush();
 			out.close();
 		}
-		if(debug){
-			return;
-		}
 		Path tmp = Files.createTempFile(item.local.osufilename, ".osu");
 		PrintWriter writer = new PrintWriter(new FileOutputStream(tmp.toFile()));
 		HttpURLConnection con = (HttpURLConnection) new URL("https://osu.ppy.sh/osu/" + item.local.mapid).openConnection();
@@ -451,6 +443,10 @@ public class VersionChecker {
 		}
 	}
 	
+	/**
+	 * Shows a dialog with general information
+	 * and help for the program.
+	 */
 	private static void showHelp(){
 		JPanel info = new JPanel(new BorderLayout());
 		JLabel general = new JLabel("<html><u>Checking:</u><br>"
@@ -546,7 +542,7 @@ public class VersionChecker {
 	}
 	
 	/**
-	 * Check the KeysPerSecond version to see
+	 * Check the Version Checker version to see
 	 * if we are running the latest version
 	 * @return The latest version
 	 */
