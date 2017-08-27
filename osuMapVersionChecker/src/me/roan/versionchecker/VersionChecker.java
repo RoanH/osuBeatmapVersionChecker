@@ -2,6 +2,7 @@ package me.roan.versionchecker;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
@@ -17,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -267,6 +269,9 @@ public class VersionChecker {
 			desel_unmarked.setEnabled(true);
 		};
 		update.addActionListener((e)->{
+			if(JOptionPane.OK_OPTION != JOptionPane.showConfirmDialog(frame, "Maps will be updated automatically, but F5 has to be pressed ingame to load the new versions.", "Version Checker", JOptionPane.OK_CANCEL_OPTION)){
+				return;
+			}
 			sel_all.setEnabled(false);
 			sel_unmarked.setEnabled(false);
 			desel_unmarked.setEnabled(false);
@@ -448,8 +453,22 @@ public class VersionChecker {
 	
 	private static void showHelp(){
 		JPanel info = new JPanel(new BorderLayout());
-		JLabel general = new JLabel("");//TODO
-		JLabel api = new JLabel("<html><u>Statement with regards to the API poll rate:</u><br>"
+		JLabel general = new JLabel("<html><u>Checking:</u><br>"
+				+ "When checking the local version of a beatmap is compared to the online<br>"
+				+ "version to check for changes. After that the map may get listed under<br>"
+				+ "'State changed' or 'Update available'.<br><br>"
+				+ "<u>Updating:</u><br>"
+				+ "When updating the local version of a beatmap is replaced by the online version.<br><br>"
+				+ "<u>State changed:</u><br>"
+				+ "Maps get listed under 'state changed' if their ranked status changed.<br>"
+				+ "Simple going to the map ingame will update its status.<br><br>"
+				+ "<u>Update available:</u><br>"
+				+ "Maps get listed under 'update avaiable' if an newer version of the map exists.<br>"
+				+ "Maps can be updated automatically, but after updating finishes F5 has to be<br>"
+				+ "pressed ingame to load the update versions.</html>");//TODO
+		general.setBorder(BorderFactory.createTitledBorder("General"));
+		info.add(general, BorderLayout.PAGE_START);
+		JLabel api = new JLabel("<html><u>Statement with regard to the API poll rate:</u><br>"
 				+ "<i>\"Current rate limit is set at an insanely high 1200 requests per minute, with burst capability of up to<br>"
 				+ "200 beyond that. If you require more, you probably fall into the above category of abuse. If you are<br>"
 				+ "doing more than 60 requests a minute, you should probably give peppy a yell.\"</i></html>");
@@ -458,13 +477,71 @@ public class VersionChecker {
 		JPanel programinfo = new JPanel(new GridLayout(3, 1));
 		String v = checkVersion();
 		JLabel version = new JLabel("Version: v1.0, latest version: " + (v == null ? "Unknow" : v));//XXX version number
-		JLabel gitlink = new JLabel("https://github.com/RoanH/KeysPerSecond");
-		JLabel formlink = new JLabel("https://osu.ppy.sh/community/forums/topics/");
-		programinfo.add(formlink);
+		JLabel gitlink = new JLabel("<html>GitHub: <font color=blue><i><u>https://github.com/RoanH/osuMapVersionChecker</u></i></font></html>");
+		JLabel forumlink = new JLabel("<html>Forum post: <font color=blue><i><u>https://osu.ppy.sh/community/forums/topics/</u></i></font></html>");
+		programinfo.add(forumlink);
 		programinfo.add(gitlink);
 		programinfo.add(version);
 		programinfo.setBorder(BorderFactory.createTitledBorder("Info"));
 		info.add(programinfo, BorderLayout.PAGE_END);
+		gitlink.addMouseListener(new MouseListener(){
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(Desktop.isDesktopSupported()){
+					try {
+						Desktop.getDesktop().browse(new URL("https://github.com/RoanH/osuMapVersionChecker").toURI());//TODO fill-in
+					} catch (IOException | URISyntaxException e1) {
+						//pity
+					}
+				}
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+			}
+		});
+		forumlink.addMouseListener(new MouseListener(){
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(Desktop.isDesktopSupported()){
+					try {
+						Desktop.getDesktop().browse(new URL("https://osu.ppy.sh/community/forums/topics/").toURI());//TODO fill-in
+					} catch (IOException | URISyntaxException e1) {
+						//pity
+					}
+				}
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+			}
+		});
 		JOptionPane.showMessageDialog(frame, info, "Version Checker", JOptionPane.INFORMATION_MESSAGE);
 	}
 	
