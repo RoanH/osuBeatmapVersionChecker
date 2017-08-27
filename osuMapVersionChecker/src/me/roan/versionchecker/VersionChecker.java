@@ -321,7 +321,7 @@ public class VersionChecker {
 			desel_unmarked.setEnabled(true);
 		};
 		update.addActionListener((e)->{
-			if(JOptionPane.OK_OPTION != JOptionPane.showConfirmDialog(frame, "Maps will be updated automatically, but F5 has to be pressed ingame or osu! restarted to load the new versions.\nIt's also advised to close osu! while maps are being updated", "Version Checker", JOptionPane.OK_CANCEL_OPTION)){
+			if(JOptionPane.OK_OPTION != JOptionPane.showConfirmDialog(frame, "Maps will be updated automatically, but F5 has to be pressed ingame or osu! restarted to load the new versions.\nIt's also advised to close osu! while maps are being updated.", "Version Checker", JOptionPane.OK_CANCEL_OPTION)){
 				return;
 			}
 			sel_all.setEnabled(false);
