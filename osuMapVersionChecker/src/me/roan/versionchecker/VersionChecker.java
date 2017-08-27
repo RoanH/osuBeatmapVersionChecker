@@ -43,6 +43,7 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
@@ -82,7 +83,6 @@ public class VersionChecker {
 	private static ScheduledFuture<?> task;
 	
 	public static void main(String[] args){
-		APIKEY = args[0];
 		OSUDIR = findOsuDir();
 		try {
 			Database.readDatabase();
@@ -92,6 +92,7 @@ public class VersionChecker {
 		}
 		FileManager.init();
 		createGUI();
+		APIKEY = getAPIKey();
 	}
 	
 	public static final void startChecking(){
@@ -576,7 +577,7 @@ public class VersionChecker {
 		}
 	}
 	
-	public static File findOsuDir() {
+	private static File findOsuDir() {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
@@ -603,7 +604,7 @@ public class VersionChecker {
 			return dir;
 		}
 		JOptionPane.showMessageDialog(null, "Unable to automatically detect you osu! folder\n"
-				                          + "Please select the folder yourself", "osu! Replay map", JOptionPane.QUESTION_MESSAGE);
+				                          + "Please select the folder yourself", "Version Checker", JOptionPane.QUESTION_MESSAGE);
 		JFileChooser chooser = new JFileChooser();
 		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		chooser.setMultiSelectionEnabled(false);
@@ -613,5 +614,17 @@ public class VersionChecker {
 		JOptionPane.showMessageDialog(null, "Unable to open osu! directory! (exiting)", "Version Checker", JOptionPane.ERROR_MESSAGE);
 		System.exit(0);
 		return null;
+	}
+	
+	private static String getAPIKey(){
+		JPanel form = new JPanel(new BorderLayout());
+		form.add(new JLabel("Please input your API key."), BorderLayout.PAGE_START);
+		form.add(new JLabel("API key: "), BorderLayout.LINE_START);
+		JTextField key = new JTextField(30);
+		form.add(key, BorderLayout.CENTER);
+		
+		JOptionPane.showMessageDialog(null, form, "Version Checker", JOptionPane.QUESTION_MESSAGE);
+		
+		return key.getText();
 	}
 }
