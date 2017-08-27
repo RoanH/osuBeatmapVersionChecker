@@ -54,10 +54,8 @@ public class AdvancedPlayer
 	private float volume;
 
 	public void setLineGain(float gain){
-		System.out.println("called");
 		if (audio instanceof JavaSoundAudioDevice)
 		{
-			System.out.println("called instance");
 		    JavaSoundAudioDevice jsAudio = (JavaSoundAudioDevice) audio;
 		    jsAudio.setLineGain(gain);
 		    volume = gain;

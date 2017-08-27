@@ -57,12 +57,9 @@ public class JavaSoundAudioDevice extends AudioDeviceBase
 
 	public void setLineGain(float gain)
 	{
-		System.out.println("called fg");
 	    if (source != null)
 	    {
-	    	System.out.println("calledfg non null");
 	        FloatControl volControl = (FloatControl) source.getControl(FloatControl.Type.MASTER_GAIN);
-	        System.out.println("called setting: " + volControl.getMinimum() + " " + volControl.getMaximum());
 	        float newGain = Math.min(Math.max(gain, volControl.getMinimum()), volControl.getMaximum());
 
 	        volControl.setValue(newGain);
@@ -110,7 +107,6 @@ public class JavaSoundAudioDevice extends AudioDeviceBase
 	// createSource fix.
 	protected void createSource(float volume) throws JavaLayerException
     {
-		System.out.println("Create source called");
         Throwable t = null;
         try
         {
