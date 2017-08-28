@@ -19,24 +19,91 @@ import me.roan.infinity.graphics.ui.RListUI.ListRenderable;
 import me.roan.versionchecker.BeatmapData.LocalBeatmapData;
 import me.roan.versionchecker.BeatmapData.OnlineBeatmapData;
 
+/**
+ * This class combines the online data
+ * of a beatmap, the local data of a beatmap
+ * , the graphical display of a beatmap and
+ * other types of metadata.
+ * @author RoanH
+ */
 public final class BeatmapItem implements ListRenderable{
+	/**
+	 * The .osu file for this beatmap
+	 */
 	public final File file;
+	/**
+	 * Font used for the beatmap title
+	 */
 	protected static final Font ftitle = new Font("Dialog", Font.BOLD, 12);
+	/**
+	 * Font used for normal text
+	 */
 	protected static final Font finfo = new Font("Dialog", Font.PLAIN, 11);
+	/**
+	 * |Font used for normal bold text
+	 */
 	protected static final Font finfob = new Font("Dialog", Font.BOLD, 11);
+	/**
+	 * Pink foreground color
+	 */
 	public static final Color PINK = new Color(255, 102, 204);
+	/**
+	 * Color used for beatmaps that are selected
+	 */
 	public static final Color SELECTION_COLOR = new Color(0.0F, 1.0F, 1.0F, 0.3F);
+	/**
+	 * Background color used when the map is set to be downloaded
+	 */
 	public static final Color DL_TRUE = new Color(0.0F, 1.0F, 0.0F, 0.15F);
+	/**
+	 * Background color used when the map is set to not be downloaded
+	 */
 	public static final Color DL_FALSE = new Color(1.0F, 0.0F, 0.0F, 0.15F);
+	/**
+	 * Background color for the 'download' button
+	 */
 	public static final Color DL_TRUE_2X = new Color(0.0F, 1.0F, 0.0F, 0.3F);
+	/**
+	 * Background color for the 'don't download' button
+	 */
 	public static final Color DL_FALSE_2X = new Color(1.0F, 0.0F, 0.0F, 0.3F);
+	/**
+	 * Local data for this beatmap from osu!.db
+	 */
 	public final LocalBeatmapData local;
+	/**
+	 * Online data for this beatmap
+	 */
 	public OnlineBeatmapData online;
+	/**
+	 * Most recent y coordinate for this
+	 * list item in the list
+	 */
 	private int y;
+	/**
+	 * Most recent width for this list item
+	 */
 	private int w;
+	/**
+	 * Whether or not the preview is playing
+	 */
 	private boolean playing = false;
+	/**
+	 * The 'to update' status for this beatmap
+	 */
 	protected Boolean download = null;
+	/**
+	 * Whether or not 'update' selection
+	 * controls are shown
+	 */
 	protected boolean showControls = false;
+	/**
+	 * Total number of maps that have
+	 * their 'update' state selected.
+	 * The update button is enabled when
+	 * this number is equal to the number
+	 * of beatmaps with an update
+	 */
 	protected static int choiceMade = 0;
 
 	@Override
@@ -167,10 +234,22 @@ public final class BeatmapItem implements ListRenderable{
 		return id == 4 ? "Loved" : (id == 3 ? "Qualified" : (id == 2 ? "Approved" : (id == 1 ? "Ranked" : (id == 0 ? "Pending" : (id == -1 ? "WIP" : (id == -2 ? "Graveyard" : "Unknow"))))));
 	}
 	
+	/**
+	 * Check to see if an update
+	 * exists for this beatmap
+	 * @return Whether or not an
+	 *         update exists
+	 */
 	protected boolean mapChanged(){
 		return online.generated;
 	}
 	
+	/**
+	 * Checks to see if the ranked state
+	 * of this beatmap changed
+	 * @return Whether or not the ranked
+	 *         status of this beatmap changed
+	 */
 	protected boolean stateChanged(){
 		if((local.status == 4 && online.approved == 1) ||
 				(local.status == 5 && online.approved == 2) ||
@@ -182,10 +261,19 @@ public final class BeatmapItem implements ListRenderable{
 		}
 	}
 
+	/**
+	 * Stop the visual state associated
+	 * with playing the beatmap preview
+	 */
 	public void cancelPlayingState(){
 		playing = false;
 	}
 
+	/**
+	 * Called when a mouse event happens
+	 * on this beatmap item
+	 * @param e The mouse event that occurred
+	 */
 	public void onMouseEvent(MouseEvent e){
 		try {
 			if(e.getX() > 4 && e.getX() < 4 + 71 && e.getY() > y + 4 && e.getY() < y + 4 + 40){
@@ -220,11 +308,24 @@ public final class BeatmapItem implements ListRenderable{
 		}
 	}
 
+	/**
+	 * Sets the online data for this beatmap item
+	 * @param data The online data for this map
+	 */
 	public void setOnlineData(OnlineBeatmapData data){
 		this.online = data;
 		showControls = data.generated;
 	}
 
+	/**
+	 * Creates a new beatmap item
+	 * with the given .osu file 
+	 * and local beatmap data
+	 * @param file The .osu file
+	 *        for this beatmap
+	 * @param data The local data
+	 *        for this beatmap
+	 */
 	protected BeatmapItem(File file, LocalBeatmapData data){
 		this.file = file;
 		this.local = data;
