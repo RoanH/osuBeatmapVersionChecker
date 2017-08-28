@@ -56,11 +56,37 @@ public class Database {
 		in.skip(13);
 		readString(in);
 		int numberOfBeatmaps = readInt(in);
+		VersionChecker.time.setText("Parsing beatmaps: 0/" + numberOfBeatmaps);
+		VersionChecker.progress.setMinimum(0);
+		VersionChecker.progress.setValue(0);
+		VersionChecker.progress.setMaximum(Database.maps.size());
 		for(int i = 0 ; i < numberOfBeatmaps; i++){
 			LocalBeatmapData data = readBeatmapEntry(in);
 			if(data.status != 4 && data.status != 5 && data.status != 1 && data.status != 7){//ignore: ranked, approved, unsubmitted and loved
-				maps.add(data);
+				BeatmapItem local = new BeatmapItem(new File(VersionChecker.OSUDIR, "Songs" + File.separator + data.songfolder), data);
+				FileManager.beatmapsModel.addElement(local);
+				VersionChecker.updateQueue.add(()->{
+					System.out.println("Execute state check");
+					local.setOnlineData(VersionChecker.checkState(data));
+					System.out.println("Online data fetched");
+					if(local.online == null){
+						return false;
+					}
+					if(local.mapChanged()){
+						FileManager.beatmapsUpdateModel.addElement(local);
+						VersionChecker.categories.setTitleAt(2, "Update available (" + FileManager.beatmapsUpdateModel.size() + ")");
+					}
+					if(local.stateChanged()){
+						FileManager.beatmapsStateModel.addElement(local);
+						VersionChecker.categories.setTitleAt(1, "State changed (" + FileManager.beatmapsStateModel.size() + ")");
+					}
+					System.out.println("State check done");
+					return true;
+				});
 			}
+			System.out.println("Parsing beatmaps: " + FileManager.beatmapsModel.size() + "/" + Database.maps.size());
+			VersionChecker.time.setText("Parsing beatmaps: " + FileManager.beatmapsModel.size() + "/" + Database.maps.size());
+			VersionChecker.progress.setValue(FileManager.beatmapsModel.size());
 		}
 		in.skip(4);
 		in.close();

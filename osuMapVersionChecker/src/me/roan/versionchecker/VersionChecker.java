@@ -99,12 +99,12 @@ public class VersionChecker {
 	 * JProgressBar showing the
 	 * progress of the current task
 	 */
-	private static JProgressBar progress;
+	protected static JProgressBar progress;
 	/**
 	 * JLabel showing the estimated time
 	 * until completion
 	 */
-	private static JLabel time;
+	protected static JLabel time;
 	/**
 	 * Runnable that enables the update
 	 * control buttons
@@ -127,14 +127,15 @@ public class VersionChecker {
 	
 	public static void main(String[] args){
 		OSUDIR = findOsuDir();
-		try {
-			Database.readDatabase();
-		} catch (IOException e) {
-			JOptionPane.showMessageDialog(frame, "A critical error occurred!", "Version Checker", JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-		FileManager.init();
 		createGUI();
+		new Thread(()->{
+			try {
+				Database.readDatabase();
+			} catch (IOException e) {
+				JOptionPane.showMessageDialog(frame, "A critical error occurred!", "Version Checker", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+		}).start();
 		APIKEY = getAPIKey();
 	}
 	

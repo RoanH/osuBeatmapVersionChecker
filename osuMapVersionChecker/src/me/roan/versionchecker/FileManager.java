@@ -11,8 +11,6 @@ import java.util.concurrent.Executors;
 import javax.imageio.ImageIO;
 import javax.swing.DefaultListModel;
 
-import me.roan.versionchecker.BeatmapData.LocalBeatmapData;
-
 /**
  * Class that manages all the list
  * models for the beatmaps
@@ -40,15 +38,6 @@ public class FileManager{
 	 */
 	protected static final Map<Integer, Image> icons = new HashMap<Integer, Image>();
 
-	/**
-	 * Initialises the model with all the unranked maps
-	 */
-	protected static void init(){
-		for(BeatmapItem p : parseB()){
-			beatmapsModel.addElement(p);
-		}
-	}
-	
 	/**
 	 * Disables the 'update' and 'don't update'
 	 * buttons for all beatmap items
@@ -108,41 +97,6 @@ public class FileManager{
 				item.download = false;
 			}
 		}
-	}
-
-	/**
-	 * Parses the beatmap collection and
-	 * gathers all unranked maps. A 'check'
-	 * task is also submitted for every map
-	 * @return A list of unranked beatmaps
-	 */
-	private static BeatmapItem[] parseB(){
-		BeatmapItem[] panels = new BeatmapItem[Database.maps.size()];
-		int i = 0;
-		for(LocalBeatmapData data : Database.maps){
-			BeatmapItem local = new BeatmapItem(new File(VersionChecker.OSUDIR, "Songs" + File.separator + data.songfolder), data);
-			panels[i] = local;
-			VersionChecker.updateQueue.add(()->{
-				System.out.println("Execute state check");
-				local.setOnlineData(VersionChecker.checkState(data));
-				System.out.println("Online data fetched");
-				if(local.online == null){
-					return false;
-				}
-				if(local.mapChanged()){
-					beatmapsUpdateModel.addElement(local);
-					VersionChecker.categories.setTitleAt(2, "Update available (" + beatmapsUpdateModel.size() + ")");
-				}
-				if(local.stateChanged()){
-					beatmapsStateModel.addElement(local);
-					VersionChecker.categories.setTitleAt(1, "State changed (" + beatmapsStateModel.size() + ")");
-				}
-				System.out.println("State check done");
-				return true;
-			});
-			i++;
-		}
-		return panels;
 	}
 
 	/**
