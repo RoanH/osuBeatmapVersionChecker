@@ -30,6 +30,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -386,6 +387,10 @@ public class VersionChecker {
 		content.setBorder(BorderFactory.createEtchedBorder());
 		
 		frame.add(content);
+		try {
+			frame.setIconImage(ImageIO.read(ClassLoader.getSystemResource("icon.png")));
+		} catch (IOException | IllegalArgumentException e1) {
+		}
 		frame.setMinimumSize(new Dimension(800, 400));
 		frame.setLocationRelativeTo(null);
 		frame.setSize(new Dimension(800, Toolkit.getDefaultToolkit().getScreenSize().height / 2));
