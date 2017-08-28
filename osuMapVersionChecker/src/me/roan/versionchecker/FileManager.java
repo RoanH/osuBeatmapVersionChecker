@@ -79,7 +79,9 @@ public class FileManager{
 		for(int i = 0; i < beatmapsUpdateModel.size(); i++){
 			BeatmapItem item = beatmapsUpdateModel.getElementAt(i);
 			if(item.download == null || override){
-				BeatmapItem.choiceMade++;
+				if(item.download == null){
+					BeatmapItem.choiceMade++;
+				}
 				item.download = true;
 			}
 		}
