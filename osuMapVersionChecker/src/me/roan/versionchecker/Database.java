@@ -85,7 +85,6 @@ public class Database {
 					return true;
 				});
 			}
-			System.out.println("Parsing beatmaps: " + FileManager.beatmapsModel.size() + "/" + numberOfBeatmaps);
 			VersionChecker.time.setText("Parsing beatmaps: " + (i + 1) + "/" + numberOfBeatmaps);
 			VersionChecker.progress.setValue(i + 1);
 		}

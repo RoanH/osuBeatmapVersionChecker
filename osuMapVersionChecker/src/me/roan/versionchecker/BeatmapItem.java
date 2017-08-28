@@ -294,13 +294,17 @@ public final class BeatmapItem implements ListRenderable{
 			}else if(e.getX() > w - 80 - 76 && e.getX() < w - 4 - 76 && e.getY() > y + 25 && e.getY() < y + 44){
 				Desktop.getDesktop().browse(new URI("https://osu.ppy.sh/forum/t/" + local.thread));
 			}else if(showControls && e.getX() > w - 80 - 80 - 76 && e.getX() < w - 4 - 80 - 76 && e.getY() > y + 4 && e.getY() < y + 23){
+				if(download == null){
+					choiceMade++;
+				}
 				download = true;
-				choiceMade++;
 				VersionChecker.enableUpdateButton();
 				e.getComponent().repaint();
 			}else if(showControls && e.getX() > w - 80 - 80 - 76 && e.getX() < w - 4 - 80 - 76 && e.getY() > y + 25 && e.getY() < y + 44){
+				if(download == null){
+					choiceMade++;
+				}
 				download = false;
-				choiceMade++;
 				e.getComponent().repaint();
 			}
 		} catch (Throwable e1) {
