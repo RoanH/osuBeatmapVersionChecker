@@ -2,8 +2,9 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/InfinityCore"/>
-	<classpathentry kind="lib" path="/InfinityCore/lib/gson-2.3.1.jar"/>
 	<classpathentry kind="src" path="javazoom"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/InfinityCoreForVersionChecker"/>
+	<classpathentry kind="lib" path="lib/gson-2.3.1.jar"/>
+	<classpathentry kind="lib" path="lib/InfinityCore-excerpt-v1.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
