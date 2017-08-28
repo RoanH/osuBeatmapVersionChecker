@@ -130,6 +130,7 @@ public class VersionChecker {
 	private static ScheduledFuture<?> task;
 	
 	public static void main(String[] args){
+		getPage("https://osu.ppy.sh/api/get_beatmaps?k=adsfsfsa&limit=1");
 		OSUDIR = findOsuDir();
 		createGUI();
 		new Thread(()->{
@@ -162,6 +163,7 @@ public class VersionChecker {
 					}
 				}else{
 					openUpdateControls.run();
+					time.setText("Beatmap checking completed");
 					Thread.sleep(Long.MAX_VALUE);
 				}
 				System.out.println("Queue size: " + updateQueue.size());
@@ -193,6 +195,7 @@ public class VersionChecker {
 				if(!updateQueue.isEmpty()){
 					updateQueue.poll().call();
 				}else{
+					time.setText("Beatmap updating completed");
 					Thread.sleep(Long.MAX_VALUE);
 				}
 				System.out.println("Queue size: " + updateQueue.size());
@@ -260,7 +263,7 @@ public class VersionChecker {
 		rate.add(s_rate, BorderLayout.CENTER);
 		rate.add(l_rate_2, BorderLayout.LINE_END);
 		checking.setPreferredSize(new Dimension(220, 0));
-		time = new JLabel(String.format("Estimated time until completion: %1$.2f minutes", ((double)updateQueue.size() / (double)pollRate)));
+		time = new JLabel();
 		time.setHorizontalAlignment(SwingConstants.CENTER);
 		s_rate.addChangeListener(new ChangeListener(){
 			
