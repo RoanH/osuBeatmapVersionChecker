@@ -115,6 +115,10 @@ public class VersionChecker {
 	 */
 	private static JButton update;
 	/**
+	 * The start checking button
+	 */
+	protected static JButton start;
+	/**
 	 * Whether or not to create a backup
 	 * of maps that are selected to be
 	 * updated
@@ -231,7 +235,7 @@ public class VersionChecker {
 		beatmapsUpdate.setFixedCellHeight(16 * 3);
 		beatmapsUpdate.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
-		categories.addTab("All unranked beatmaps (" + beatmaps.getModel().getSize() + ")", new JScrollPane(beatmaps));
+		categories.addTab("All unranked beatmaps (0)", new JScrollPane(beatmaps));
 		
 		categories.addTab("State changed (0)", new JScrollPane(beatmapsState));
 		categories.addTab("Update available (0)", new JScrollPane(beatmapsUpdate));
@@ -241,7 +245,8 @@ public class VersionChecker {
 		
 		JPanel header = new JPanel(new BorderLayout());
 		JPanel checking = new JPanel(new BorderLayout());
-		JButton start = new JButton("Start");
+		start = new JButton("Start");
+		start.setEnabled(false);
 		JLabel l_rate = new JLabel("API poll rate: ");
 		JSpinner s_rate = new JSpinner(new SpinnerNumberModel(pollRate, 1, 1400, 1));
 		JLabel l_rate_2 = new JLabel(" requests/minute");

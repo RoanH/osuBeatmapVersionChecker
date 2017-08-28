@@ -59,12 +59,13 @@ public class Database {
 		VersionChecker.time.setText("Parsing beatmaps: 0/" + numberOfBeatmaps);
 		VersionChecker.progress.setMinimum(0);
 		VersionChecker.progress.setValue(0);
-		VersionChecker.progress.setMaximum(Database.maps.size());
+		VersionChecker.progress.setMaximum(numberOfBeatmaps);
 		for(int i = 0 ; i < numberOfBeatmaps; i++){
 			LocalBeatmapData data = readBeatmapEntry(in);
 			if(data.status != 4 && data.status != 5 && data.status != 1 && data.status != 7){//ignore: ranked, approved, unsubmitted and loved
 				BeatmapItem local = new BeatmapItem(new File(VersionChecker.OSUDIR, "Songs" + File.separator + data.songfolder), data);
 				FileManager.beatmapsModel.addElement(local);
+				VersionChecker.categories.setTitleAt(0, "All unranked beatmaps (" + FileManager.beatmapsModel.size() + ")");
 				VersionChecker.updateQueue.add(()->{
 					System.out.println("Execute state check");
 					local.setOnlineData(VersionChecker.checkState(data));
@@ -84,12 +85,13 @@ public class Database {
 					return true;
 				});
 			}
-			System.out.println("Parsing beatmaps: " + FileManager.beatmapsModel.size() + "/" + Database.maps.size());
-			VersionChecker.time.setText("Parsing beatmaps: " + FileManager.beatmapsModel.size() + "/" + Database.maps.size());
-			VersionChecker.progress.setValue(FileManager.beatmapsModel.size());
+			System.out.println("Parsing beatmaps: " + FileManager.beatmapsModel.size() + "/" + numberOfBeatmaps);
+			VersionChecker.time.setText("Parsing beatmaps: " + (i + 1) + "/" + numberOfBeatmaps);
+			VersionChecker.progress.setValue(i + 1);
 		}
 		in.skip(4);
 		in.close();
+		VersionChecker.start.setEnabled(true);
 	}
 	
 	/**
