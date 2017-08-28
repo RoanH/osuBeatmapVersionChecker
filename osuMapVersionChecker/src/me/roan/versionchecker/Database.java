@@ -13,17 +13,43 @@ import me.roan.infinity.util.ByteUtils;
 import me.roan.infinity.util.encryption.Encryption;
 import me.roan.versionchecker.BeatmapData.LocalBeatmapData;
 
+/**
+ * This class is used to read beatmap
+ * data from osu!.db
+ * @author RoanH
+ */
 public class Database {
-	
-	//https://github.com/ppy/osu-wiki/blob/master/wiki/osu!_File_Formats/Db_(file_format)/en.md
-	
-	private static int version;//osu! version, not that anyone still uses an old version
+	/**
+	 * osu! version used for proper parsing of the database
+	 */
+	private static int version;
+	/**
+	 * List of unranked beatmaps
+	 */
 	public static final List<LocalBeatmapData> maps = new ArrayList<LocalBeatmapData>();
-	public static final int GM_STANDARD= 0;
-	public static final int GM_CTB= 2;
-	public static final int GM_MANIA= 3;
-	public static final int GM_TAIKO= 1;
+	/**
+	 * Gamemode standard constant
+	 */
+	public static final int GM_STANDARD = 0;
+	/**
+	 * Gamemode catch constant
+	 */
+	public static final int GM_CTB = 2;
+	/**
+	 * Gamemode mania constant
+	 */
+	public static final int GM_MANIA = 3;
+	/**
+	 * Gamemode taiko constant
+	 */
+	public static final int GM_TAIKO = 1;
 	
+	/**
+	 * Reads the local beatmap database and
+	 * filters out and compiles information
+	 * about present unranked maps 
+	 * @throws IOException When an IOException occurs
+	 */
 	public static final void readDatabase() throws IOException{
 		FileInputStream in = new FileInputStream(new File(VersionChecker.OSUDIR, "osu!.db"));
 		version = readInt(in);
@@ -40,6 +66,13 @@ public class Database {
 		in.close();
 	}
 	
+	/**
+	 * Reads a single beatmap entry
+	 * from the database
+	 * @param in The open input stream to the database
+	 * @return The parsed beatmap entry
+	 * @throws IOException When an IOException occurs
+	 */
 	private static final LocalBeatmapData readBeatmapEntry(InputStream in) throws IOException{
 		LocalBeatmapData data = new LocalBeatmapData();
 		in.skip(4);
@@ -127,6 +160,14 @@ public class Database {
 		return data;
 	}
 	
+	/**
+	 * Reads a single int from 
+	 * the database input stream
+	 * @param in The open input 
+	 *        stream to the database
+	 * @return The integer that was read
+	 * @throws IOException When an IOException occurs
+	 */
 	public static int readInt(InputStream in) throws IOException{
 		byte[] arr = new byte[4];
 		in.read(arr);
@@ -134,6 +175,18 @@ public class Database {
 		return ByteUtils.byteArrayToInt(arr);
 	}
 	
+	/**
+	 * Reads a single int-double
+	 * pair from the input stream
+	 * the read double is only returned
+	 * when the int denoting the mod
+	 * combination indicates nomod
+	 * otherwise -1 is returned
+	 * @param in The open input stream
+	 *        to the database
+	 * @return The double that was read
+	 * @throws IOException When an IOException occurs
+	 */
 	public static double readIntDoublePairNoModRating(InputStream in) throws IOException{
 		in.read();
 		int i = readInt(in);
@@ -146,6 +199,14 @@ public class Database {
 		}
 	}
 	
+	/**
+	 * Reads a single float from
+	 * the input stream
+	 * @param in The open input stream
+	 *        to the database
+	 * @return The float that was read
+	 * @throws IOException When an IOException occurs
+	 */
 	public static float readFloat(InputStream in) throws IOException {
 		byte[] bytes = new byte[4];
 		in.read(bytes);
@@ -153,6 +214,14 @@ public class Database {
 		return bb.getFloat();
 	}
 	
+	/**
+	 * Reads a single double from
+	 * the input stream
+	 * @param in The open input stream
+	 *        to the database
+	 * @return The double that was read
+	 * @throws IOException When an IOException occurs
+	 */
 	public static double readDouble(InputStream in) throws IOException {
 		byte[] bytes = new byte[8];
 		in.read(bytes);
@@ -160,6 +229,14 @@ public class Database {
 		return bb.getDouble();
 	}
 	
+	/**
+	 * Reads a string from
+	 * the input stream
+	 * @param in The open input stream
+	 *        to the database
+	 * @return The string that was read
+	 * @throws IOException When an IOException occurs
+	 */
 	public static String readString(InputStream in) throws IOException{
 		if(in.read() == 0x00){
 			return null;
@@ -169,6 +246,14 @@ public class Database {
 		return new String(str, Encryption.CHARSET);
 	}
 
+	/**
+	 * Reads a single variable length 
+	 * integer from the input stream
+	 * @param in The open input stream
+	 *        to the database
+	 * @return The integer that was read
+	 * @throws IOException When an IOException occurs
+	 */
 	public static int readUnsignedLeb128(InputStream in) throws IOException {
 		int result = 0;
 		int cur;
