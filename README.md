@@ -25,8 +25,8 @@ That's it, I hope some of you will find this program useful  :)
 
 ## Downloads
 (Java 8 required)<br>
-[Windows executable](https://github.com/RoanH/osuBeatmapVersionChecker/releases/download/v1.0/osuBeatmapVersionChecker-v1.0.exe)<br>
-[Runnable Java Archive](https://github.com/RoanH/osuBeatmapVersionChecker/releases/download/v1.0/osuBeatmapVersionChecker-v1.0.jar)
+[Windows executable](https://github.com/RoanH/osuBeatmapVersionChecker/releases/download/v1.1/osuBeatmapVersionChecker-v1.1.exe)<br>
+[Runnable Java Archive](https://github.com/RoanH/osuBeatmapVersionChecker/releases/download/v1.1/osuBeatmapVersionChecker-v1.1.jar)
 
 All releases: [link](https://github.com/RoanH/osuBeatmapVersionChecker/releases)<br>
 GitHub repository: [osuBeatmapVersionChecker](https://github.com/RoanH/osuBeatmapVersionChecker)
