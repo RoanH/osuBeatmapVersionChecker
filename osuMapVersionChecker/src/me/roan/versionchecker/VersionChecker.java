@@ -95,7 +95,7 @@ public class VersionChecker {
 	/**
 	 * API poll rate
 	 */
-	private static int pollRate = 30;
+	private static int pollRate = 50;
 	/**
 	 * JProgressBar showing the
 	 * progress of the current task
@@ -331,7 +331,7 @@ public class VersionChecker {
 			desel_unmarked.setEnabled(true);
 		};
 		update.addActionListener((e)->{
-			if(JOptionPane.OK_OPTION != JOptionPane.showConfirmDialog(frame, "Maps will be updated automatically, but F5 has to be pressed ingame or osu! restarted to load the new versions.\nIt's also advised to close osu! while maps are being updated.", "Version Checker", JOptionPane.OK_CANCEL_OPTION)){
+			if(JOptionPane.OK_OPTION != JOptionPane.showConfirmDialog(frame, "Maps will be updated automatically, but F5 has to be pressed ingame or osu! restarted to load the new versions.\nIt's also advised to close osu! while maps are being updated.\nLastly the status of the map is only properly updated once you navigate to it ingame\ntherefore running this program twice in a row can list the same maps.", "Version Checker", JOptionPane.OK_CANCEL_OPTION)){
 				return;
 			}
 			sel_all.setEnabled(false);
