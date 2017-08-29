@@ -561,7 +561,7 @@ public class VersionChecker {
 		String v = checkVersion();
 		JLabel version = new JLabel("Version: v1.0, latest version: " + (v == null ? "Unknow" : v));//XXX version number
 		JLabel gitlink = new JLabel("<html>GitHub: <font color=blue><i><u>https://github.com/RoanH/osuBeatmapVersionChecker</u></i></font></html>");
-		JLabel forumlink = new JLabel("<html>Forum post: <font color=blue><i><u>https://osu.ppy.sh/community/forums/topics/</u></i></font></html>");
+		JLabel forumlink = new JLabel("<html>Forum post: <font color=blue><i><u>https://osu.ppy.sh/community/forums/topics/636199</u></i></font></html>");
 		programinfo.add(forumlink);
 		programinfo.add(gitlink);
 		programinfo.add(version);
@@ -602,7 +602,7 @@ public class VersionChecker {
 			public void mouseClicked(MouseEvent e) {
 				if(Desktop.isDesktopSupported()){
 					try {
-						Desktop.getDesktop().browse(new URL("https://osu.ppy.sh/community/forums/topics/").toURI());//TODO fill-in
+						Desktop.getDesktop().browse(new URL("https://osu.ppy.sh/community/forums/topics/636199").toURI());
 					} catch (IOException | URISyntaxException e1) {
 						//pity
 					}
