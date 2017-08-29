@@ -548,7 +548,7 @@ public class VersionChecker {
 				+ "Maps can be updated automatically, but after updating finishes F5 has to be<br>"
 				+ "pressed ingame or osu! restarted to load the update versions.<br>"
 				+ "Also the status of the map is only properly updated once you navigate to it ingame<br>"
-				+ "therefore running this program twice in a row can list the same maps.</html>");//TODO
+				+ "therefore running this program twice in a row can list the same maps.</html>");
 		general.setBorder(BorderFactory.createTitledBorder("General"));
 		info.add(general, BorderLayout.PAGE_START);
 		JLabel api = new JLabel("<html><u>Statement with regard to the API poll rate:</u><br>"
@@ -560,7 +560,7 @@ public class VersionChecker {
 		JPanel programinfo = new JPanel(new GridLayout(3, 1));
 		String v = checkVersion();
 		JLabel version = new JLabel("Version: v1.0, latest version: " + (v == null ? "Unknow" : v));//XXX version number
-		JLabel gitlink = new JLabel("<html>GitHub: <font color=blue><i><u>https://github.com/RoanH/osuMapVersionChecker</u></i></font></html>");
+		JLabel gitlink = new JLabel("<html>GitHub: <font color=blue><i><u>https://github.com/RoanH/osuBeatmapVersionChecker</u></i></font></html>");
 		JLabel forumlink = new JLabel("<html>Forum post: <font color=blue><i><u>https://osu.ppy.sh/community/forums/topics/</u></i></font></html>");
 		programinfo.add(forumlink);
 		programinfo.add(gitlink);
@@ -573,7 +573,7 @@ public class VersionChecker {
 			public void mouseClicked(MouseEvent e) {
 				if(Desktop.isDesktopSupported()){
 					try {
-						Desktop.getDesktop().browse(new URL("https://github.com/RoanH/osuMapVersionChecker").toURI());//TODO fill-in
+						Desktop.getDesktop().browse(new URL("https://github.com/RoanH/osuBeatmapVersionChecker").toURI());
 					} catch (IOException | URISyntaxException e1) {
 						//pity
 					}
