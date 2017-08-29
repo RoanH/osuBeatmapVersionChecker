@@ -635,14 +635,14 @@ public class VersionChecker {
 	 */
 	private static final String checkVersion(){
 		try{ 			
-			HttpURLConnection con = (HttpURLConnection) new URL("https://api.github.com/repos/RoanH/osuMapVersionChecker/tags").openConnection(); 			
+			HttpURLConnection con = (HttpURLConnection) new URL("https://api.github.com/repos/RoanH/osuBeatmapVersionChecker/tags").openConnection(); 			
 			con.setRequestMethod("GET"); 		
 			con.setConnectTimeout(10000); 					   
 			BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream())); 	
 			String line = reader.readLine(); 		
 			reader.close(); 	
 			String[] versions = line.split("\"name\":\"v");
-			int max_main = 3;
+			int max_main = 1;
 			int max_sub = 0;
 			String[] tmp;
 			for(int i = 1; i < versions.length; i++){
