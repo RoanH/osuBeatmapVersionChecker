@@ -546,7 +546,9 @@ public class VersionChecker {
 				+ "<u>Update available:</u><br>"
 				+ "Maps get listed under 'update avaiable' if an newer version of the map exists.<br>"
 				+ "Maps can be updated automatically, but after updating finishes F5 has to be<br>"
-				+ "pressed ingame or osu! restarted to load the update versions.</html>");//TODO
+				+ "pressed ingame or osu! restarted to load the update versions.<br>"
+				+ "Also the status of the map is only properly updated once you navigate to it ingame<br>"
+				+ "therefore running this program twice in a row can list the same maps.</html>");//TODO
 		general.setBorder(BorderFactory.createTitledBorder("General"));
 		info.add(general, BorderLayout.PAGE_START);
 		JLabel api = new JLabel("<html><u>Statement with regard to the API poll rate:</u><br>"
