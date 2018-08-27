@@ -559,7 +559,7 @@ public class VersionChecker {
 		info.add(api, BorderLayout.CENTER);
 		JPanel programinfo = new JPanel(new GridLayout(3, 1));
 		String v = checkVersion();
-		JLabel version = new JLabel("Version: v1.0, latest version: " + (v == null ? "Unknow" : v));//XXX version number
+		JLabel version = new JLabel("Version: v1.1, latest version: " + (v == null ? "Unknow" : v));//XXX version number
 		JLabel gitlink = new JLabel("<html>GitHub: <font color=blue><i><u>https://github.com/RoanH/osuBeatmapVersionChecker</u></i></font></html>");
 		JLabel forumlink = new JLabel("<html>Forum post: <font color=blue><i><u>https://osu.ppy.sh/community/forums/topics/636199</u></i></font></html>");
 		programinfo.add(forumlink);
@@ -636,7 +636,8 @@ public class VersionChecker {
 	private static final String checkVersion(){
 		try{ 			
 			HttpURLConnection con = (HttpURLConnection) new URL("https://api.github.com/repos/RoanH/osuBeatmapVersionChecker/tags").openConnection(); 			
-			con.setRequestMethod("GET"); 		
+			con.setRequestMethod("GET");
+			con.addRequestProperty("Accept", "application/vnd.github.v3+json");		
 			con.setConnectTimeout(10000); 					   
 			BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream())); 	
 			String line = reader.readLine(); 		
