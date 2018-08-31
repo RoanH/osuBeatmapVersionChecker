@@ -18,6 +18,7 @@ compile:
     - ls -l
     - rm -rf ./bin
     - mkdir bin
+    - cp -r ./javazoom/* ./src
     - find src -name "*.java" > sources.txt
     - find lib -name "*.jar" > libs.txt
     - libs=""
