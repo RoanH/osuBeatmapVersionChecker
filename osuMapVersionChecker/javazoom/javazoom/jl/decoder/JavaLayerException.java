@@ -59,11 +59,13 @@ public class JavaLayerException extends Exception
 	}
 	
 	
+	@Override
 	public void printStackTrace()
 	{
 		printStackTrace(System.err);	
 	}
 	
+	@Override
 	public void printStackTrace(PrintStream ps)
 	{
 		if (this.exception==null)

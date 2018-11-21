@@ -34,6 +34,7 @@ public class JavaSoundAudioDeviceFactory extends AudioDeviceFactory
 
 	static private final String DEVICE_CLASS_NAME = "javazoom.jl.player.JavaSoundAudioDevice";
 	
+	@Override
 	public synchronized AudioDevice createAudioDevice()
 		throws JavaLayerException
 	{

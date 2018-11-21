@@ -71,6 +71,7 @@ public class FactoryRegistry extends AudioDeviceFactory
 		factories.remove(factory.getClass());	
 	}
 	
+	@Override
 	public AudioDevice createAudioDevice() throws JavaLayerException
 	{
 		AudioDevice device = null;

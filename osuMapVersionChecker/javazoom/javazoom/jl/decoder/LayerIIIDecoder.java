@@ -214,6 +214,7 @@ final class LayerIIIDecoder implements FrameDecoder
 		br = new BitReserve();
 	}
 
+	@Override
 	public void decodeFrame()
 	{
 		decode();

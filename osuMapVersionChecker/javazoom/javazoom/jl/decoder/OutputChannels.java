@@ -122,6 +122,7 @@ public class OutputChannels
 	}
 		
 		
+	@Override
 	public boolean equals(Object o)
 	{
 		boolean equals = false;
@@ -135,6 +136,7 @@ public class OutputChannels
 		return equals;
 	}
 							  
+	@Override
 	public int hashCode()
 	{
 		return outputChannels;	

@@ -307,6 +307,7 @@ public class Decoder implements DecoderErrors
 		{			
 		}
 		
+		@Override
 		public Object clone()
 		{
 			try
@@ -351,6 +352,6 @@ public class Decoder implements DecoderErrors
 			return equalizer;	
 		}
 				
-	};
+	}
 }
 
