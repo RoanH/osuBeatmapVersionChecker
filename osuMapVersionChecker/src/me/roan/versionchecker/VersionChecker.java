@@ -130,6 +130,10 @@ public class VersionChecker {
 	 */
 	private static ScheduledFuture<?> task;
 	
+	/**
+	 * Main method starts program
+	 * @param args No valid command line arguments
+	 */
 	public static void main(String[] args){
 		getPage("https://osu.ppy.sh/api/get_beatmaps?k=adsfsfsa&limit=1");
 		OSUDIR = findOsuDir();
