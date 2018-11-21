@@ -49,7 +49,7 @@ public class FileManager{
 		}
 		VersionChecker.frame.repaint();
 	}
-	
+
 	/**
 	 * Submits an update task for every
 	 * beatmap that's selected to be updated
@@ -66,7 +66,7 @@ public class FileManager{
 			}
 		}
 	}
-	
+
 	/**
 	 * Set the selected flag for every beatmap
 	 * to 'update'. If override is false maps
@@ -107,11 +107,11 @@ public class FileManager{
 	 * @param item The beatmap to load the icon for
 	 * @see #icons
 	 */
-	protected static synchronized void getBeatmapIcon(BeatmapItem item) {
+	protected static synchronized void getBeatmapIcon(BeatmapItem item){
 		if(!icons.containsKey(item.local.setid)){
 			icons.put(item.local.setid, null);
 			imageLoader.submit(()->{
-				try {
+				try{
 					File f = new File(VersionChecker.OSUDIR + File.separator + "Data" + File.separator + "bt" + File.separator + item.local.setid + ".jpg");
 					if(!f.exists()){
 						f = new File(VersionChecker.OSUDIR + File.separator + "Data" + File.separator + "bt" + File.separator + item.local.setid + "l.jpg");
@@ -119,7 +119,7 @@ public class FileManager{
 					if(f.exists()){
 						icons.put(item.local.setid, ImageIO.read(f).getScaledInstance(-1, 16 * 2 + 8, Image.SCALE_SMOOTH));
 					}
-				} catch (IOException | NullPointerException | ArrayIndexOutOfBoundsException e) {
+				}catch(IOException | NullPointerException | ArrayIndexOutOfBoundsException e){
 					//This error is not very important, it just means that osu! hasn't cached
 					//the image for this beatmap yet
 				}

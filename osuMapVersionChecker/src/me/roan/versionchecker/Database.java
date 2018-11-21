@@ -18,7 +18,7 @@ import me.roan.versionchecker.BeatmapData.LocalBeatmapData;
  * data from osu!.db
  * @author RoanH
  */
-public class Database {
+public class Database{
 	/**
 	 * osu! version used for proper parsing of the database
 	 */
@@ -43,7 +43,7 @@ public class Database {
 	 * Gamemode taiko constant
 	 */
 	public static final int GM_TAIKO = 1;
-	
+
 	/**
 	 * Reads the local beatmap database and
 	 * filters out and compiles information
@@ -60,7 +60,7 @@ public class Database {
 		VersionChecker.progress.setMinimum(0);
 		VersionChecker.progress.setValue(0);
 		VersionChecker.progress.setMaximum(numberOfBeatmaps);
-		for(int i = 0 ; i < numberOfBeatmaps; i++){
+		for(int i = 0; i < numberOfBeatmaps; i++){
 			LocalBeatmapData data = readBeatmapEntry(in);
 			if(data.status != 4 && data.status != 5 && data.status != 1 && data.status != 7){//ignore: ranked, approved, unsubmitted and loved
 				BeatmapItem local = new BeatmapItem(new File(VersionChecker.OSUDIR, "Songs" + File.separator + data.songfolder), data);
@@ -92,7 +92,7 @@ public class Database {
 		in.close();
 		VersionChecker.start.setEnabled(true);
 	}
-	
+
 	/**
 	 * Reads a single beatmap entry
 	 * from the database
@@ -186,7 +186,7 @@ public class Database {
 		in.skip(5);
 		return data;
 	}
-	
+
 	/**
 	 * Reads a single int from 
 	 * the database input stream
@@ -201,7 +201,7 @@ public class Database {
 		ByteUtils.flipArray(arr);
 		return ByteUtils.byteArrayToInt(arr);
 	}
-	
+
 	/**
 	 * Reads a single int-double
 	 * pair from the input stream
@@ -225,7 +225,7 @@ public class Database {
 			return -1.0D;
 		}
 	}
-	
+
 	/**
 	 * Reads a single float from
 	 * the input stream
@@ -234,13 +234,13 @@ public class Database {
 	 * @return The float that was read
 	 * @throws IOException When an IOException occurs
 	 */
-	public static float readFloat(InputStream in) throws IOException {
+	public static float readFloat(InputStream in) throws IOException{
 		byte[] bytes = new byte[4];
 		in.read(bytes);
 		ByteBuffer bb = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN);
 		return bb.getFloat();
 	}
-	
+
 	/**
 	 * Reads a single double from
 	 * the input stream
@@ -249,13 +249,13 @@ public class Database {
 	 * @return The double that was read
 	 * @throws IOException When an IOException occurs
 	 */
-	public static double readDouble(InputStream in) throws IOException {
+	public static double readDouble(InputStream in) throws IOException{
 		byte[] bytes = new byte[8];
 		in.read(bytes);
 		ByteBuffer bb = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN);
 		return bb.getDouble();
 	}
-	
+
 	/**
 	 * Reads a string from
 	 * the input stream
@@ -281,15 +281,15 @@ public class Database {
 	 * @return The integer that was read
 	 * @throws IOException When an IOException occurs
 	 */
-	public static int readUnsignedLeb128(InputStream in) throws IOException {
+	public static int readUnsignedLeb128(InputStream in) throws IOException{
 		int result = 0;
 		int cur;
 		int count = 0;
-		do {
+		do{
 			cur = in.read() & 0xFF;
 			result |= (cur & 0x7F) << (count * 7);
 			count++;
-		} while (((cur & 0x80) == 0x80) && count < 5);
+		}while(((cur & 0x80) == 0x80) && count < 5);
 		return result;
 	}
 }

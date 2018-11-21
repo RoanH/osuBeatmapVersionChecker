@@ -34,7 +34,7 @@ public class BeatmapData{
 	 * Game mode
 	 */
 	public int mode;
-	
+
 	/**
 	 * Object to hold the local data
 	 * about a beatmap found in osu!.db
@@ -82,7 +82,7 @@ public class BeatmapData{
 		 */
 		public String hash;
 	}
-	
+
 	/**
 	 * Object to mirror the online
 	 * state of a beatmap
@@ -93,7 +93,7 @@ public class BeatmapData{
 		 * Ranked status of the map
 		 */
 		public int approved;
-		
+
 		/**
 		 * Whether or not this is a place holder
 		 * data object. This indicates that the

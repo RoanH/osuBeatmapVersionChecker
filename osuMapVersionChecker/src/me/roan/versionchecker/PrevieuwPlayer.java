@@ -11,7 +11,7 @@ import javazoom.jl.player.advanced.AdvancedPlayer;
  * Simple class to play beatmap song previews
  * @author RoanH
  */
-public class PrevieuwPlayer {
+public class PrevieuwPlayer{
 	/**
 	 * Audio player
 	 */
@@ -20,7 +20,7 @@ public class PrevieuwPlayer {
 	 * Audio executor
 	 */
 	private static final ExecutorService executor = Executors.newSingleThreadExecutor();
-	
+
 	/**
 	 * Plays the preview
 	 * for the given beatmap
@@ -29,21 +29,21 @@ public class PrevieuwPlayer {
 	public static void playFile(BeatmapItem data){
 		stop();
 		executor.submit(()->{
-			try {				
+			try{
 				player = new AdvancedPlayer(new FileInputStream(new File(data.file, data.local.audiofile)));
 				player.setLineGain(-20F);
 				player.playSection(data.local.previeuw_time, 30000);
-			} catch (Throwable t) {
+			}catch(Throwable t){
 				//Not a crucial operation
 			}
 			data.cancelPlayingState();
 		});
-		try {
+		try{
 			Thread.sleep(1);
-		} catch (InterruptedException e) {
+		}catch(InterruptedException e){
 		}
 	}
-	
+
 	/**
 	 * Stops the song currently
 	 * being played
