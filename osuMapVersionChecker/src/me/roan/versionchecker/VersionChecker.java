@@ -702,7 +702,8 @@ public class VersionChecker{
 		if(new File(dir, "osu!.exe").exists()){
 			return dir;
 		}
-		JOptionPane.showMessageDialog(null, "Unable to automatically detect you osu! folder\n" + "Please select the folder yourself", "Version Checker", JOptionPane.QUESTION_MESSAGE);
+		JOptionPane.showMessageDialog(null, "Unable to automatically detect you osu! folder\n" 
+		                                  + "Please select the folder yourself", "Version Checker", JOptionPane.QUESTION_MESSAGE);
 		JFileChooser chooser = new JFileChooser();
 		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		chooser.setMultiSelectionEnabled(false);
