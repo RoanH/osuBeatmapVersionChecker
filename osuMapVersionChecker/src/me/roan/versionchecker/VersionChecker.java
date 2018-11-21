@@ -66,7 +66,7 @@ import me.roan.versionchecker.BeatmapData.OnlineBeatmapData;
  * Program to check for beatmap updates
  * @author Roan
  */
-public class VersionChecker {
+public class VersionChecker{
 	/**
 	 * osu! directory
 	 */
@@ -129,7 +129,7 @@ public class VersionChecker {
 	 * Future of the checking task
 	 */
 	private static ScheduledFuture<?> task;
-	
+
 	/**
 	 * Main method starts program
 	 * @param args No valid command line arguments
@@ -139,16 +139,16 @@ public class VersionChecker {
 		OSUDIR = findOsuDir();
 		createGUI();
 		new Thread(()->{
-			try {
+			try{
 				Database.readDatabase();
-			} catch (IOException e) {
+			}catch(IOException e){
 				JOptionPane.showMessageDialog(frame, "A critical error occurred!", "Version Checker", JOptionPane.ERROR_MESSAGE);
 				return;
 			}
 		}).start();
 		APIKEY = getAPIKey();
 	}
-	
+
 	/**
 	 * Starts the loop that checks the
 	 * state of each beatmap
@@ -180,7 +180,7 @@ public class VersionChecker {
 			time.setText(String.format("Estimated time until completion: %1$.2f minutes", ((double)updateQueue.size() / (double)pollRate)));
 		}, 0, TimeUnit.MINUTES.toNanos(1) / pollRate, TimeUnit.NANOSECONDS);
 	}
-	
+
 	/**
 	 * Starts the loop that updates all
 	 * the selected beatmaps
@@ -212,45 +212,45 @@ public class VersionChecker {
 			time.setText(String.format("Estimated time until completion: %1$.2f minutes", ((double)updateQueue.size() / (double)pollRate)));
 		}, 0, TimeUnit.MINUTES.toNanos(1) / pollRate, TimeUnit.NANOSECONDS);
 	}
-	
+
 	/**
 	 * Creates and shows the main GUI
 	 */
 	public static void createGUI(){
 		JPanel content = new JPanel(new BorderLayout());
 		categories = new JTabbedPane();
-		
+
 		BeatmapItemMouseListener listener = new BeatmapItemMouseListener();
 		JList<BeatmapItem> beatmaps = new JList<BeatmapItem>(FileManager.beatmapsModel);
 		JList<BeatmapItem> beatmapsUpdate = new JList<BeatmapItem>(FileManager.beatmapsUpdateModel);
 		JList<BeatmapItem> beatmapsState = new JList<BeatmapItem>(FileManager.beatmapsStateModel);
-		
+
 		beatmaps.addMouseListener(listener);
 		beatmaps.setUI(new RListUI());
 		((RListUI)beatmaps.getUI()).setBackground(Color.LIGHT_GRAY.brighter());
 		beatmaps.setFixedCellHeight(16 * 3);
 		beatmaps.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		
+
 		beatmapsState.addMouseListener(listener);
 		beatmapsState.setUI(new RListUI());
 		((RListUI)beatmapsState.getUI()).setBackground(Color.LIGHT_GRAY.brighter());
 		beatmapsState.setFixedCellHeight(16 * 3);
 		beatmapsState.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		
+
 		beatmapsUpdate.addMouseListener(listener);
 		beatmapsUpdate.setUI(new RListUI());
 		((RListUI)beatmapsUpdate.getUI()).setBackground(Color.LIGHT_GRAY.brighter());
 		beatmapsUpdate.setFixedCellHeight(16 * 3);
 		beatmapsUpdate.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		
+
 		categories.addTab("All unranked beatmaps (0)", new JScrollPane(beatmaps));
-		
+
 		categories.addTab("State changed (0)", new JScrollPane(beatmapsState));
 		categories.addTab("Update available (0)", new JScrollPane(beatmapsUpdate));
-				
+
 		categories.setBorder(BorderFactory.createTitledBorder("Listing"));
 		content.add(categories, BorderLayout.CENTER);
-		
+
 		JPanel header = new JPanel(new BorderLayout());
 		JPanel checking = new JPanel(new BorderLayout());
 		start = new JButton("Start");
@@ -271,12 +271,12 @@ public class VersionChecker {
 		time = new JLabel();
 		time.setHorizontalAlignment(SwingConstants.CENTER);
 		s_rate.addChangeListener(new ChangeListener(){
-			
+
 			private int prev = pollRate;
 
 			@Override
-			public void stateChanged(ChangeEvent arg0) {
-				int newValue = (int) s_rate.getValue();
+			public void stateChanged(ChangeEvent arg0){
+				int newValue = (int)s_rate.getValue();
 				if(newValue > 60 && prev <= 60){
 					if(JOptionPane.OK_OPTION != JOptionPane.showConfirmDialog(frame, "It's advised to inform peppy when using a poll rate over 60.", "Version Checker", JOptionPane.WARNING_MESSAGE)){
 						s_rate.setValue(prev = 60);
@@ -297,7 +297,7 @@ public class VersionChecker {
 		checking.add(rate, BorderLayout.PAGE_START);
 		checking.add(start, BorderLayout.CENTER);
 		header.add(checking, BorderLayout.LINE_START);
-		
+
 		JButton sel_all = new JButton("Set all maps to 'update'");
 		JButton sel_unmarked = new JButton("Set all unmarked maps to 'update'");
 		JButton desel_unmarked = new JButton("Set all unmarked maps to 'don't update'");
@@ -346,11 +346,11 @@ public class VersionChecker {
 		});
 		JCheckBox makeBackup = new JCheckBox("Create backups", false);
 		makeBackup.addActionListener(new ActionListener(){
-			
+
 			private boolean informed = false;
 
 			@Override
-			public void actionPerformed(ActionEvent arg0) {
+			public void actionPerformed(ActionEvent arg0){
 				if(!informed){
 					JOptionPane.showMessageDialog(frame, "<html><center>A copy will now be made for each map.<br>After updating finishes the copies can be found in:<br>" + new File(FileSystemView.getFileSystemView().getDefaultDirectory(), "backup").getAbsolutePath() + "</center></html>", "Version Checker", JOptionPane.INFORMATION_MESSAGE);
 				}
@@ -361,11 +361,11 @@ public class VersionChecker {
 		JPanel side = new JPanel(new BorderLayout());
 		side.add(update, BorderLayout.CENTER);
 		side.add(makeBackup, BorderLayout.PAGE_START);
-		
+
 		JPanel update_panel = new JPanel(new BorderLayout());
 		update_panel.add(modes, BorderLayout.CENTER);
 		update_panel.add(side, BorderLayout.LINE_END);
-		
+
 		JPanel help_panel = new JPanel(new BorderLayout());
 		JButton help = new JButton("Help");
 		help.addActionListener((e)->{
@@ -373,27 +373,27 @@ public class VersionChecker {
 		});
 		help_panel.add(help, BorderLayout.CENTER);
 		header.add(help_panel, BorderLayout.LINE_END);
-		
+
 		checking.setBorder(BorderFactory.createTitledBorder("Checking"));
 		update_panel.setBorder(BorderFactory.createTitledBorder("Updating"));
 		help_panel.setBorder(BorderFactory.createTitledBorder("Info"));
-		
+
 		header.add(update_panel, BorderLayout.CENTER);
-		
+
 		JPanel progress_panel = new JPanel(new BorderLayout());
 		progress = new JProgressBar();
 		progress_panel.setBorder(BorderFactory.createTitledBorder("Progress"));
 		progress_panel.add(time, BorderLayout.PAGE_START);
 		progress_panel.add(progress, BorderLayout.CENTER);
 		header.add(progress_panel, BorderLayout.PAGE_END);
-		
+
 		content.add(header, BorderLayout.PAGE_START);
 		content.setBorder(BorderFactory.createEtchedBorder());
-		
+
 		frame.add(content);
-		try {
+		try{
 			frame.setIconImage(ImageIO.read(ClassLoader.getSystemResource("icon.png")));
-		} catch (IOException | IllegalArgumentException e1) {
+		}catch(IOException | IllegalArgumentException e1){
 		}
 		frame.setMinimumSize(new Dimension(800, 400));
 		frame.setLocationRelativeTo(null);
@@ -401,7 +401,7 @@ public class VersionChecker {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 	}
-	
+
 	/**
 	 * Gets the online status of the beatmap
 	 * and returns it
@@ -428,7 +428,7 @@ public class VersionChecker {
 		//never want to return null since we don't want to trigger a retry
 		return data;
 	}
-	
+
 	/**
 	 * Used to make API calls. This method
 	 * gets the JSON string returned
@@ -438,19 +438,19 @@ public class VersionChecker {
 	 */
 	private static final String getPage(String url){
 		try{
-			HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
+			HttpURLConnection con = (HttpURLConnection)new URL(url).openConnection();
 			con.setRequestMethod("GET");
 			con.setConnectTimeout(500);
-			
-		    BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
-		    String line = reader.readLine();
-		    reader.close();
-		    return line;
+
+			BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String line = reader.readLine();
+			reader.close();
+			return line;
 		}catch(Exception e){
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Listener that notifies the beatmapitem
 	 * that was clicked of the mouse event
@@ -459,7 +459,7 @@ public class VersionChecker {
 	private static final class BeatmapItemMouseListener implements MouseListener{
 
 		@Override
-		public void mouseClicked(MouseEvent e) {
+		public void mouseClicked(MouseEvent e){
 			@SuppressWarnings("unchecked")
 			ListRenderable map = ((JList<ListRenderable>)e.getSource()).getSelectedValue();
 			if(map != null){
@@ -468,22 +468,22 @@ public class VersionChecker {
 		}
 
 		@Override
-		public void mousePressed(MouseEvent e) {					
+		public void mousePressed(MouseEvent e){
 		}
 
 		@Override
-		public void mouseReleased(MouseEvent e) {				
+		public void mouseReleased(MouseEvent e){
 		}
 
 		@Override
-		public void mouseEntered(MouseEvent e) {
+		public void mouseEntered(MouseEvent e){
 		}
 
 		@Override
-		public void mouseExited(MouseEvent e) {
+		public void mouseExited(MouseEvent e){
 		}
 	}
-	
+
 	/**
 	 * Updates the given beatmap item
 	 * with the online version
@@ -506,7 +506,7 @@ public class VersionChecker {
 		}
 		Path tmp = Files.createTempFile(item.local.osufilename, ".osu");
 		PrintWriter writer = new PrintWriter(new FileOutputStream(tmp.toFile()));
-		HttpURLConnection con = (HttpURLConnection) new URL("https://osu.ppy.sh/osu/" + item.local.mapid).openConnection();
+		HttpURLConnection con = (HttpURLConnection)new URL("https://osu.ppy.sh/osu/" + item.local.mapid).openConnection();
 		con.setRequestMethod("GET");
 		con.setConnectTimeout(1000);
 
@@ -526,12 +526,12 @@ public class VersionChecker {
 	/**
 	 * Enables the 'start updating' button
 	 */
-	protected static void enableUpdateButton() {
+	protected static void enableUpdateButton(){
 		if(FileManager.beatmapsUpdateModel.size() == BeatmapItem.choiceMade){
 			update.setEnabled(true);
 		}
 	}
-	
+
 	/**
 	 * Shows a dialog with general information
 	 * and help for the program.
@@ -574,78 +574,78 @@ public class VersionChecker {
 		gitlink.addMouseListener(new MouseListener(){
 
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseClicked(MouseEvent e){
 				if(Desktop.isDesktopSupported()){
-					try {
+					try{
 						Desktop.getDesktop().browse(new URL("https://github.com/RoanH/osuBeatmapVersionChecker").toURI());
-					} catch (IOException | URISyntaxException e1) {
+					}catch(IOException | URISyntaxException e1){
 						//pity
 					}
 				}
 			}
 
 			@Override
-			public void mousePressed(MouseEvent e) {
+			public void mousePressed(MouseEvent e){
 			}
 
 			@Override
-			public void mouseReleased(MouseEvent e) {
+			public void mouseReleased(MouseEvent e){
 			}
 
 			@Override
-			public void mouseEntered(MouseEvent e) {
+			public void mouseEntered(MouseEvent e){
 			}
 
 			@Override
-			public void mouseExited(MouseEvent e) {
+			public void mouseExited(MouseEvent e){
 			}
 		});
 		forumlink.addMouseListener(new MouseListener(){
 
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseClicked(MouseEvent e){
 				if(Desktop.isDesktopSupported()){
-					try {
+					try{
 						Desktop.getDesktop().browse(new URL("https://osu.ppy.sh/community/forums/topics/636199").toURI());
-					} catch (IOException | URISyntaxException e1) {
+					}catch(IOException | URISyntaxException e1){
 						//pity
 					}
 				}
 			}
 
 			@Override
-			public void mousePressed(MouseEvent e) {
+			public void mousePressed(MouseEvent e){
 			}
 
 			@Override
-			public void mouseReleased(MouseEvent e) {
+			public void mouseReleased(MouseEvent e){
 			}
 
 			@Override
-			public void mouseEntered(MouseEvent e) {
+			public void mouseEntered(MouseEvent e){
 			}
 
 			@Override
-			public void mouseExited(MouseEvent e) {
+			public void mouseExited(MouseEvent e){
 			}
 		});
 		JOptionPane.showMessageDialog(frame, info, "Version Checker", JOptionPane.INFORMATION_MESSAGE);
 	}
-	
+
 	/**
 	 * Check the Version Checker version to see
 	 * if we are running the latest version
 	 * @return The latest version
 	 */
 	private static final String checkVersion(){
-		try{ 			
-			HttpURLConnection con = (HttpURLConnection) new URL("https://api.github.com/repos/RoanH/osuBeatmapVersionChecker/tags").openConnection(); 			
+		try{
+			HttpURLConnection con = (HttpURLConnection)new URL("https://api.github.com/repos/RoanH/osuBeatmapVersionChecker/tags").openConnection();
 			con.setRequestMethod("GET");
-			con.addRequestProperty("Accept", "application/vnd.github.v3+json");		
-			con.setConnectTimeout(10000); 					   
-			BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream())); 	
-			String line = reader.readLine(); 		
-			reader.close(); 	
+			con.addRequestProperty("Accept", "application/vnd.github.v3+json");
+			con.setConnectTimeout(10000);
+			BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String line = reader.readLine();
+			reader.close();
 			String[] versions = line.split("\"name\":\"v");
 			int max_main = 1;
 			int max_sub = 0;
@@ -664,22 +664,22 @@ public class VersionChecker {
 				}
 			}
 			return "v" + max_main + "." + max_sub;
-		}catch(Exception e){ 	
+		}catch(Exception e){
 			return null;
 			//No Internet access or something else is wrong,
 			//No problem though since this isn't a critical function
 		}
 	}
-	
+
 	/**
 	 * Tries to find the osu! dir or
 	 * promts the user for it
 	 * @return The osu! directetory
 	 */
-	private static File findOsuDir() {
-		try {
+	private static File findOsuDir(){
+		try{
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
+		}catch(ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e){
 		}
 		File dir;
 		dir = new File("C:\\Users\\" + System.getProperty("user.name") + "\\AppData\\Local\\osu!");
@@ -702,8 +702,7 @@ public class VersionChecker {
 		if(new File(dir, "osu!.exe").exists()){
 			return dir;
 		}
-		JOptionPane.showMessageDialog(null, "Unable to automatically detect you osu! folder\n"
-				                          + "Please select the folder yourself", "Version Checker", JOptionPane.QUESTION_MESSAGE);
+		JOptionPane.showMessageDialog(null, "Unable to automatically detect you osu! folder\n" + "Please select the folder yourself", "Version Checker", JOptionPane.QUESTION_MESSAGE);
 		JFileChooser chooser = new JFileChooser();
 		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		chooser.setMultiSelectionEnabled(false);
@@ -714,7 +713,7 @@ public class VersionChecker {
 		System.exit(0);
 		return null;
 	}
-	
+
 	/**
 	 * Prompts the user for their API key
 	 * @return The API key
