@@ -251,11 +251,7 @@ public final class BeatmapItem implements ListRenderable{
 	 *         status of this beatmap changed
 	 */
 	protected boolean stateChanged(){
-		if((local.status == 4 && online.approved == 1) || (local.status == 5 && online.approved == 2) || (local.status == 7 && online.approved == 4) || (local.status == 2 && online.approved <= 0)){
-			return false;
-		}else{
-			return true;
-		}
+		return !((local.status == 4 && online.approved == 1) || (local.status == 5 && online.approved == 2) || (local.status == 7 && online.approved == 4) || (local.status == 2 && online.approved <= 0));
 	}
 
 	/**
