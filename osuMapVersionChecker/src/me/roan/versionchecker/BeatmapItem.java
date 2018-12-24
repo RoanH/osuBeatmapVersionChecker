@@ -218,8 +218,8 @@ public final class BeatmapItem implements ListRenderable{
 	 * @param id The status ID
 	 * @return The status as text
 	 */
-	//0=unknow,4=ranked,5=approved,7=loved?,2=graveyard/pending,1=not submited>
 	private static String getStatusLocal(int id){
+		//0=unknown,4=ranked,5=approved,7=loved?,2=graveyard/pending,1=not submitted
 		return id == 1 ? "Not submitted" : (id == 2 ? "Pending" : (id == 4 ? "Ranked" : (id == 5 ? "Approved" : (id == 7 ? "Loved" : "Unknown"))));
 	}
 
@@ -229,8 +229,8 @@ public final class BeatmapItem implements ListRenderable{
 	 * @param id The status ID
 	 * @return The status as text
 	 */
-	//4=loved,3=qualified,2=approved,1=ranked,0=pending,-1= WIP,-2=graveyard
 	private static String getStatusOnline(int id){
+		//4=loved,3=qualified,2=approved,1=ranked,0=pending,-1= WIP,-2=graveyard
 		return id == 4 ? "Loved" : (id == 3 ? "Qualified" : (id == 2 ? "Approved" : (id == 1 ? "Ranked" : (id == 0 ? "Pending" : (id == -1 ? "WIP" : (id == -2 ? "Graveyard" : "Unknown"))))));
 	}
 

@@ -271,7 +271,9 @@ public class VersionChecker{
 		time = new JLabel();
 		time.setHorizontalAlignment(SwingConstants.CENTER);
 		s_rate.addChangeListener(new ChangeListener(){
-
+			/**
+			 * Previous poll rate
+			 */
 			private int prev = pollRate;
 
 			@Override
@@ -346,7 +348,9 @@ public class VersionChecker{
 		});
 		JCheckBox makeBackup = new JCheckBox("Create backups", false);
 		makeBackup.addActionListener(new ActionListener(){
-
+			/**
+			 * Whether or not the backup dialog was shown before already
+			 */
 			private boolean informed = false;
 
 			@Override
