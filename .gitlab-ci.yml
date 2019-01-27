@@ -16,20 +16,20 @@ stages:
 pending:
   allow_failure: true
   script:
-    - curl ${SERVER}ci/status.sh | bash -s ManiaColumnCentering ${CI_COMMIT_SHA} pending
+    - curl ${SERVER}ci/status.sh | bash -s osuBeatmapVersionChecker ${CI_COMMIT_SHA} pending
   stage: compile
 
 success:
   allow_failure: true
   script:
-    - curl ${SERVER}ci/status.sh | bash -s ManiaColumnCentering ${CI_COMMIT_SHA} success
+    - curl ${SERVER}ci/status.sh | bash -s osuBeatmapVersionChecker ${CI_COMMIT_SHA} success
   when: on_success
   stage: status
 
 failure:
   allow_failure: true
   script:
-    - curl ${SERVER}ci/status.sh | bash -s ManiaColumnCentering ${CI_COMMIT_SHA} failure
+    - curl ${SERVER}ci/status.sh | bash -s osuBeatmapVersionChecker ${CI_COMMIT_SHA} failure
   when: on_failure
   stage: status
 
