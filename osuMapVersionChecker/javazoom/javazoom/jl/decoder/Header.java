@@ -34,6 +34,7 @@ package javazoom.jl.decoder;
 /**
  * Class for extracting information from a frame header.
  */
+@SuppressWarnings("javadoc")
 public final class Header
 {
 	public  static final int[][]	frequencies =
@@ -335,7 +336,7 @@ public final class Header
 				length += 4;	
 				//System.out.println("VBR:"+vbri+" Frames:"+ h_vbr_frames +" Size:"+h_vbr_bytes);
 				// TOC
-				// TODO				
+				// 				
 			}
 		}
 		catch (ArrayIndexOutOfBoundsException e)

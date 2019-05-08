@@ -40,6 +40,7 @@ package javazoom.jl.decoder;
 
 // REVIEW: there is no range checking, so buffer underflow or overflow
 // can silently occur.
+@SuppressWarnings("javadoc")
 final class BitReserve
 {
    /**

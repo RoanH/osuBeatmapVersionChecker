@@ -40,6 +40,7 @@ import javazoom.jl.decoder.JavaLayerException;
  *			desired information (sample rate, channels etc.)
  *			are not available. 
  */
+@SuppressWarnings("javadoc")
 public abstract class AudioDeviceBase implements AudioDevice
 {
 	private	boolean			open = false;
@@ -67,6 +68,7 @@ public abstract class AudioDeviceBase implements AudioDevice
 	 * Template method to provide the 
 	 * implementation for the opening of the audio device. 
 	 */
+	@SuppressWarnings("unused")
 	protected void openImpl() throws JavaLayerException
 	{			
 	}
@@ -142,6 +144,7 @@ public abstract class AudioDeviceBase implements AudioDevice
 	 * Template method to provide the implementation for
 	 * writing audio samples to the audio device. 
 	 */
+	@SuppressWarnings("unused")
 	protected void writeImpl(short[] samples, int offs, int len, float volume) 
 		throws JavaLayerException
 	{

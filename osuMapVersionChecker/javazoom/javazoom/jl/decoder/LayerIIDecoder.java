@@ -32,7 +32,8 @@ package javazoom.jl.decoder;
 /**
  * Implements decoding of MPEG Audio Layer II frames. 
  */
-class LayerIIDecoder extends LayerIDecoder implements FrameDecoder
+@SuppressWarnings("javadoc")
+class LayerIIDecoder extends LayerIDecoder
 {
 
 	public LayerIIDecoder()

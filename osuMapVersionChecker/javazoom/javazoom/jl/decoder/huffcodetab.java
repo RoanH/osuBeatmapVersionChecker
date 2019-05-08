@@ -42,6 +42,7 @@ package javazoom.jl.decoder;
 /**
  * Class to implements Huffman decoder.
  */
+@SuppressWarnings("javadoc")
 final class huffcodetab
 {
   private static final int	 MXOFF=250;

@@ -42,6 +42,7 @@ import javazoom.jl.decoder.JavaLayerException;
  * @since 0.0.8
  * @author Mat McGowan
  */
+@SuppressWarnings("javadoc")
 public class JavaSoundAudioDevice extends AudioDeviceBase
 {
 	private SourceDataLine	source = null;

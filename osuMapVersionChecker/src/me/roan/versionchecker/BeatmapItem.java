@@ -148,34 +148,34 @@ public final class BeatmapItem implements ListRenderable{
 		}
 		g.setColor(PINK);
 		g.setFont(ftitle);
-		g.drawString(local.title + " [" + local.diff + "]", (int)(x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6, y + 12);
+		g.drawString(local.title + " [" + local.diff + "]", (int)(x + ((16 * 2) / 9.0D) * 16.0D) + 6, y + 12);
 		g.setColor(Color.BLACK);
 		g.setFont(finfo);
-		g.drawString("By " + local.creator, (int)(x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6, y + 12 + 14);
+		g.drawString("By " + local.creator, (int)(x + ((16 * 2) / 9.0D) * 16.0D) + 6, y + 12 + 14);
 		//status
 		String state = "Status: " + getStatusLocal(local.status);
-		g.drawString(state, (int)(x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6, y + 12 + 14 + 15);
+		g.drawString(state, (int)(x + ((16 * 2) / 9.0D) * 16.0D) + 6, y + 12 + 14 + 15);
 		if(online != null){
 			if(this.stateChanged()){
 				g.setColor(Color.RED);
-				g.drawString(" > " + getStatusOnline(online.approved), (int)(x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 1 + g.getFontMetrics().stringWidth(state), y + 12 + 14 + 15);
+				g.drawString(" > " + getStatusOnline(online.approved), (int)(x + ((16 * 2) / 9.0D) * 16.0D) + 6 + 1 + g.getFontMetrics().stringWidth(state), y + 12 + 14 + 15);
 			}
 		}else{
 			g.setColor(Color.GRAY);
-			g.drawString(" > Loading", (int)(x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 1 + g.getFontMetrics().stringWidth(state), y + 12 + 14 + 15);
+			g.drawString(" > Loading", (int)(x + ((16 * 2) / 9.0D) * 16.0D) + 6 + 1 + g.getFontMetrics().stringWidth(state), y + 12 + 14 + 15);
 		}
 		//attributes
 		g.setFont(finfob);
 		g.setColor(Color.BLACK);
-		g.drawString("Stars: ", (int)(x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 140, y + 12 + 14);
-		g.drawString("Length: ", (int)(x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 140, y + 12 + 14 + 15);
+		g.drawString("Stars: ", (int)(x + ((16 * 2) / 9.0D) * 16.0D) + 6 + 140, y + 12 + 14);
+		g.drawString("Length: ", (int)(x + ((16 * 2) / 9.0D) * 16.0D) + 6 + 140, y + 12 + 14 + 15);
 		int soff = g.getFontMetrics().stringWidth("Stars: ");
 		int loff = g.getFontMetrics().stringWidth("Length: ");
 		g.setFont(finfo);
-		g.drawString(String.format("%1$.2f", local.difficultyrating), (int)(x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 140 + soff, y + 12 + 14);
+		g.drawString(String.format("%1$.2f", local.difficultyrating), (int)(x + ((16 * 2) / 9.0D) * 16.0D) + 6 + 140 + soff, y + 12 + 14);
 		g.drawString(String.format("%02d:%02d",
 		                           TimeUnit.MILLISECONDS.toMinutes(local.total_length) % TimeUnit.HOURS.toMinutes(1),
-		                           TimeUnit.MILLISECONDS.toSeconds(local.total_length) % TimeUnit.MINUTES.toSeconds(1)), (int) (x + ((double)(16 * 2) / 9.0D) * 16.0D) + 6 + 140 + loff, y + 12 + 14 + 15);
+		                           TimeUnit.MILLISECONDS.toSeconds(local.total_length) % TimeUnit.MINUTES.toSeconds(1)), (int) (x + (16 * 2 / 9.0D) * 16.0D) + 6 + 140 + loff, y + 12 + 14 + 15);
 		g.setFont(finfob);
 		g.setColor(PINK);
 		g.fillRect(w - 80, y + 4, 76, 19);
@@ -188,10 +188,10 @@ public final class BeatmapItem implements ListRenderable{
 		g.drawRect(w - 80 - 76 - 4, y + 4, 76, 19);
 		g.drawRect(w - 80 - 76 - 4, y + 25, 76, 19);
 		g.setColor(Color.WHITE);
-		g.drawString("Listing", (int)w - 80 - 76 - 4 + ((76 - g.getFontMetrics().stringWidth("Listing")) / 2), y + 17);
-		g.drawString("Forum post", (int)w - 80 - 76 - 4 + ((76 - g.getFontMetrics().stringWidth("Forum post")) / 2), y + 12 + 14 + 12);
-		g.drawString("Copy title", (int)w - 80 + ((76 - g.getFontMetrics().stringWidth("Copy title")) / 2), y + 17);
-		g.drawString("osu! direct", (int)w - 80 + ((76 - g.getFontMetrics().stringWidth("osu! direct")) / 2), y + 12 + 14 + 12);
+		g.drawString("Listing", w - 80 - 76 - 4 + ((76 - g.getFontMetrics().stringWidth("Listing")) / 2), y + 17);
+		g.drawString("Forum post", w - 80 - 76 - 4 + ((76 - g.getFontMetrics().stringWidth("Forum post")) / 2), y + 12 + 14 + 12);
+		g.drawString("Copy title", w - 80 + ((76 - g.getFontMetrics().stringWidth("Copy title")) / 2), y + 17);
+		g.drawString("osu! direct", w - 80 + ((76 - g.getFontMetrics().stringWidth("osu! direct")) / 2), y + 12 + 14 + 12);
 
 		//controls
 		if(showControls){
@@ -207,8 +207,8 @@ public final class BeatmapItem implements ListRenderable{
 			g.setColor(Color.RED);
 			g.drawRect(w - 80 - 76 - 76 - 8, y + 25, 76, 19);
 			g.setColor(Color.BLACK);
-			g.drawString("Update", (int)w - 80 - 78 - 76 - 4 + ((76 - g.getFontMetrics().stringWidth("Update")) / 2), y + 17);
-			g.drawString("Don't update", (int)w - 78 - 80 - 76 - 4 + ((76 - g.getFontMetrics().stringWidth("Don't update")) / 2), y + 12 + 14 + 12);
+			g.drawString("Update", w - 80 - 78 - 76 - 4 + ((76 - g.getFontMetrics().stringWidth("Update")) / 2), y + 17);
+			g.drawString("Don't update", w - 78 - 80 - 76 - 4 + ((76 - g.getFontMetrics().stringWidth("Don't update")) / 2), y + 12 + 14 + 12);
 		}
 	}
 

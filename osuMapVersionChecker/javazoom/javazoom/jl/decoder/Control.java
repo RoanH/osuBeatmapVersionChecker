@@ -22,7 +22,7 @@ package javazoom.jl.decoder;
 /**
  * Work in progress.
  */
-
+@SuppressWarnings("javadoc")
 public interface Control
 {
 	

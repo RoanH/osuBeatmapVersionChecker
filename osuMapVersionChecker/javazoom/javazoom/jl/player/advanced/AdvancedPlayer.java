@@ -35,6 +35,7 @@ import javazoom.jl.player.JavaSoundAudioDevice;
  * a hybrid of javazoom.jl.player.Player tweeked to include <code>play(startFrame, endFrame)</code>
  * hopefully this will be included in the api
  */
+@SuppressWarnings("javadoc")
 public class AdvancedPlayer
 {
 	/** The MPEG audio bitstream.*/
@@ -219,6 +220,7 @@ public class AdvancedPlayer
 	 * @param endms		ms to play for
 	 * @return true if the last frame was played, or false if there are more frames.
 	 */
+	@SuppressWarnings("cast")
 	public boolean playSection(final int startms, final int ms) throws JavaLayerException{
 		float msf = bitstream.readFrame().ms_per_frame();
 		bitstream.closeFrame();

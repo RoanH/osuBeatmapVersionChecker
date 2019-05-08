@@ -38,7 +38,8 @@ import javazoom.jl.decoder.SampleBuffer;
  */
 
 // REVIEW: the audio device should not be opened until the
-// first MPEG audio frame has been decoded. 
+// first MPEG audio frame has been decoded.
+@SuppressWarnings("javadoc")
 public class Player
 {	  	
 	/**

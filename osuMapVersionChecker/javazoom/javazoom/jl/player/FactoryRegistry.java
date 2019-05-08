@@ -34,7 +34,7 @@ import javazoom.jl.decoder.JavaLayerException;
  * @since 0.0.8
  * @author Mat McGowan
  */
-
+@SuppressWarnings("javadoc")
 public class FactoryRegistry extends AudioDeviceFactory
 {
 	static private FactoryRegistry instance = null;
@@ -115,7 +115,7 @@ public class FactoryRegistry extends AudioDeviceFactory
 				Enumeration<AudioDeviceFactory> e = factories.elements();
 				while (e.hasMoreElements())
 				{
-					AudioDeviceFactory factory = (AudioDeviceFactory)e.nextElement();
+					AudioDeviceFactory factory = e.nextElement();
 					fa[idx++] = factory;	
 				}
 			}

@@ -35,6 +35,7 @@ package javazoom.jl.decoder;
  * 
  * @author MDM
  */
+@SuppressWarnings("javadoc")
 public final class Equalizer
 {		
 	/**

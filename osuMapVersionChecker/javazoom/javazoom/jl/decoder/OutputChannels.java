@@ -30,6 +30,7 @@ package javazoom.jl.decoder;
  * @author	Mat McGowan 12/12/99 
  * @since	0.0.7
  */
+@SuppressWarnings("javadoc")
 public class OutputChannels
 {		
 	/**

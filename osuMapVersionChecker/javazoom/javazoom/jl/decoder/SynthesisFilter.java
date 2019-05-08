@@ -37,6 +37,7 @@ import java.io.IOException;
  * This class does a fast downsampling from 32, 44.1 or 48 kHz to 8 kHz, if ULAW is defined.
  * Frequencies above 4 kHz are removed by ignoring higher subbands.
  */
+@SuppressWarnings({"javadoc", "cast"})
 final class SynthesisFilter
 {
   private float[] 			 v1;

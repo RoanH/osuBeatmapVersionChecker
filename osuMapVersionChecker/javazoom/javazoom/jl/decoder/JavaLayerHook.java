@@ -25,7 +25,7 @@ import java.io.InputStream;
  * The <code>JavaLayerHooks</code> class allows developers to change
  * the way the JavaLayer library uses Resources. 
  */
-
+@SuppressWarnings("javadoc")
 public interface JavaLayerHook
 {
 	/**

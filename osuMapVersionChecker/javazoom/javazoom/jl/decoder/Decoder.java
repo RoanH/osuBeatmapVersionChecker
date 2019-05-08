@@ -28,6 +28,7 @@ package javazoom.jl.decoder;
  * @version 0.0.7 12/12/99
  * @since	0.0.5
  */
+@SuppressWarnings("javadoc")
 public class Decoder implements DecoderErrors
 {
 	static private final Params DEFAULT_PARAMS = new Params();
@@ -263,6 +264,7 @@ public class Decoder implements DecoderErrors
 		return decoder;
 	}
 	
+	@SuppressWarnings("unused")
 	private void initialize(Header header)
 		throws DecoderException
 	{

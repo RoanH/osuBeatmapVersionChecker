@@ -50,6 +50,7 @@ import java.io.PushbackInputStream;
  * various decoders. This should be moved into this class and associated
  * inner classes.
  */
+@SuppressWarnings({"javadoc", "cast"})
 public final class Bitstream implements BitstreamErrors
 {
 	/**
@@ -493,7 +494,8 @@ public final class Bitstream implements BitstreamErrors
   /**
    * Parses the data previously read with read_frame_data().
    */
-  void parse_frame() throws BitstreamException
+  @SuppressWarnings("unused")
+void parse_frame() throws BitstreamException
   {
 	// Convert Bytes read to int
 	int	b=0;
