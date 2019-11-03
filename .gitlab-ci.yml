@@ -32,13 +32,9 @@ failure:
 
 verify:
   allow_failure: true
-  script:
-    - cd ${PROJECTNAME}
-    - cd src
-    - wget ${SERVER}ci/javadoc.sh
-    - chmod 755 javadoc.sh
-    - ./javadoc.sh
+  script: curl ${SERVER}ci/javadoc.sh | bash
   stage: javadoc
+  coverage: '/\([0-9]{2,3}\.[0-9]{2}%\)/'
 
 javadoc:
   script:
