@@ -1,5 +1,7 @@
-# osu! Map Version Checker 
+# osu! Map Version Checker
 Simple program to check for new versions of unranked beatmaps.
+
+**Note: This project is no longer actively maintained due to low interest and an osu! update breaking the program.**
 
 # Forum post
 Link: https://osu.ppy.sh/forum/p/6222182#p6222182
